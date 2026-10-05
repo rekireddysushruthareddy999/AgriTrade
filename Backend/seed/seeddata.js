@@ -224,7 +224,7 @@ async function seedData() {
 }
 if (require.main === module) {
   mongoose
-    .connect(process.env.MONGO_URI || "mongodb://localhost:27017/agritrade")
+    .connect(process.env.MONGO_URL || "mongodb://localhost:27017/agritrade")
     .then(seedData)
     .then(() => {
       console.log("Database seeding completed.");

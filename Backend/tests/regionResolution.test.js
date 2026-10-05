@@ -4,12 +4,12 @@ const mongoose = require("mongoose");
 const Region = require("../models/Region");
 const { resolveRegionId } = require("../controllers/authController");
 
-const originalMongoUri = process.env.MONGO_URI;
-process.env.MONGO_URI =
-  process.env.MONGO_URI || "mongodb://127.0.0.1:27017/agritrade";
+const originalMongoUri = process.env.MONGO_URL;
+process.env.MONGO_URL =
+  process.env.MONGO_URL || "mongodb://127.0.0.1:27017/agritrade";
 
 (async () => {
-  await mongoose.connect(process.env.MONGO_URI, {
+  await mongoose.connect(process.env.MONGO_URL, {
     serverSelectionTimeoutMS: 5000,
   });
 })();
@@ -32,6 +32,6 @@ test("resolveRegionId accepts a region name and creates or finds the region", as
 test.after(async () => {
   await mongoose.disconnect();
 
-  if (originalMongoUri === undefined) delete process.env.MONGO_URI;
-  else process.env.MONGO_URI = originalMongoUri;
+  if (originalMongoUri === undefined) delete process.env.MONGO_URL;
+  else process.env.MONGO_URL = originalMongoUri;
 });

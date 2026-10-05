@@ -88,7 +88,7 @@ Copy `.env.example` to `.env`.
 ```env
 NODE_ENV=development
 PORT=5001
-MONGO_URI=mongodb://127.0.0.1:27017/agritrade
+MONGO_URL=mongodb://127.0.0.1:27017/agritrade
 JWT_SECRET=replace-with-a-long-random-secret
 JWT_EXPIRES_IN=30d
 CORS_ORIGIN=http://localhost:5174
@@ -103,13 +103,13 @@ VITE_API_URL=http://localhost:5001/api
 
 Never commit `.env` files or production secrets.
 The backend `PORT` and frontend `VITE_API_URL` must point to the same API port.
-Production must provide `MONGO_URI`, `JWT_SECRET`, and `CORS_ORIGIN`; the
+Production must provide `MONGO_URL`, `JWT_SECRET`, and `CORS_ORIGIN`; the
 backend refuses to start with development database or JWT defaults when
 `NODE_ENV=production`.
 
 ## Database Setup
 
-Start MongoDB locally or create a MongoDB Atlas database, then set `MONGO_URI`.
+Start MongoDB locally or create a MongoDB Atlas database, then set `MONGO_URL`.
 
 Optional demo data:
 
@@ -203,7 +203,7 @@ JWTs are persisted in browser local storage for the current application architec
 2. Set the root directory to `Backend` or use the included `render.yaml`.
 3. Build command: `npm ci --omit=dev`.
 4. Start command: `npm start`.
-5. Set `MONGO_URI`, `JWT_SECRET`, and `CORS_ORIGIN` in Render environment variables.
+5. Set `MONGO_URL`, `JWT_SECRET`, and `CORS_ORIGIN` in Render environment variables.
 6. Set `CORS_ORIGIN` to the exact deployed frontend origin.
 7. Confirm `/health` returns HTTP 200.
 
@@ -218,7 +218,7 @@ JWTs are persisted in browser local storage for the current application architec
 
 ## Troubleshooting
 
-- **MongoDB connection fails:** verify `MONGO_URI`, network access and MongoDB credentials.
+- **MongoDB connection fails:** verify `MONGO_URL`, network access and MongoDB credentials.
 - **CORS error:** make `CORS_ORIGIN` exactly match the frontend origin.
 - **Registration or API network error:** confirm the backend's printed port matches `VITE_API_URL`, restart both servers after changing environment files, and open the Vite URL printed by the frontend.
 - **401 after login:** verify the frontend is using the same backend URL and that `JWT_SECRET` is stable between restarts.
