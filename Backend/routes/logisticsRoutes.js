@@ -1,0 +1,1 @@
+const express=require("express");const {optimizeRoute}=require("../controllers/logisticsController");const {authenticate}=require("../middlewares/authMiddleware");const router=express.Router();router.use(authenticate);router.post("/optimize-route",optimizeRoute);module.exports=router;

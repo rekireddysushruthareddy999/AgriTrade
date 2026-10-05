@@ -1,0 +1,3 @@
+import { Link } from "react-router-dom";import LotStatusBadge from "./LotStatusBadge";
+function LotCard({lot}){return <article className="card lot-card"><div className="card-top"><div><span className="eyebrow">Lot</span><h3>{lot.groupId||String(lot._id).slice(-8).toUpperCase()}</h3></div><LotStatusBadge status={lot.status}/></div><div className="lot-meta"><div><span>Produce</span><strong>{lot.produceCategoryId?.name||"—"}</strong></div><div><span>Quantity</span><strong>{lot.quantity} {lot.produceCategoryId?.unit||""}</strong></div><div><span>Farmer</span><strong>{lot.farmerId?.name||"—"}</strong></div></div><Link to={`/lots/${lot._id}`} className="secondary-btn">View details</Link></article>}
+export default LotCard;

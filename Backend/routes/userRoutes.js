@@ -1,0 +1,1 @@
+const express=require("express");const {getUsers,getUserById}=require("../controllers/userController");const {authenticate}=require("../middlewares/authMiddleware");const {requireRole}=require("../middlewares/roleMiddleware");const router=express.Router();router.use(authenticate,requireRole("admin"));router.get("/",getUsers);router.get("/:id",getUserById);module.exports=router;

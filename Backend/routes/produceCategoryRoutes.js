@@ -1,0 +1,13 @@
+const express = require("express");
+const c = require("../controllers/produceCategoryController");
+const { authenticate } = require("../middlewares/authMiddleware");
+const { requireRole } = require("../middlewares/roleMiddleware");
+const router = express.Router();
+router.use(authenticate);
+router.get("/", c.getProduceCategories);
+router.post("/", requireRole("admin", "farmer"), c.createProduceCategory);
+router.get("/:id", c.getProduceCategoryById);
+router.put("/:id", requireRole("admin"), c.updateProduceCategory);
+router.patch("/:id", requireRole("admin"), c.updateProduceCategory);
+router.delete("/:id", requireRole("admin"), c.deleteProduceCategory);
+module.exports = router;

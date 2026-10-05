@@ -1,0 +1,91 @@
+### Health
+GET http://localhost:9948/health
+
+### Auth
+POST http://localhost:9948/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Sushrutha Reddy",
+  "email": "Sushrutha@gmail.com",
+  "password": "Sushrutha",
+  "role": "farmer",
+  "regionId": "64d6d8c7a1d4f4000b8d6d22"
+}
+
+### Login
+POST http://localhost:9948/api/auth/login
+Content-Type: application/json
+
+{
+  "identifier": "9876543210",
+  "password": "Sushrutha"
+}
+
+### Forgot Password
+POST http://localhost:9948/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "identifier": "9876543210"
+}
+
+### Reset Password
+POST http://localhost:9948/api/auth/reset-password
+Content-Type: application/json
+
+{
+  "token": "PASTE_RESET_TOKEN_HERE",
+  "newPassword": "NewPassword123",
+  "confirmPassword": "NewPassword123"
+}
+
+### Users
+GET http://localhost:9948/api/users
+
+### Farmers
+GET http://localhost:9948/api/farmers
+
+####
+POST http://localhost:9948/api/farmers
+Content-Type: application/json
+
+{
+  "name": "Ravi M",
+  "phone": "9876543210",
+  "regionId": "64d6d8c7a1d4f4000b8d6d22"
+}
+
+### Lots
+GET http://localhost:9948/api/lots
+
+####
+POST http://localhost:9948/api/lots
+Content-Type: application/json
+
+{
+  "farmerId": "64d6d8c7a1d4f4000b8d6d22",
+  "produceCategoryId": "64d6d8c7a1d4f4000b8d6d23",
+  "quantity": 120,
+  "harvestDate": "2026-09-01T00:00:00.000Z",
+  "expiryEstimate": "2026-09-15T00:00:00.000Z",
+  "warehouseId": "64d6d8c7a1d4f4000b8d6d24"
+}
+
+### Warehouses
+GET http://localhost:9948/api/warehouses
+
+### Settlements
+GET http://localhost:9948/api/settlements
+
+### Logistics
+POST http://localhost:9948/api/logistics/optimize-route
+Content-Type: application/json
+
+{
+  "stops": [
+    { "id": "A", "latitude": 12.9716, "longitude": 77.5946 },
+    { "id": "B", "latitude": 12.9800, "longitude": 77.6000 },
+    { "id": "C", "latitude": 12.9650, "longitude": 77.5900 }
+  ]
+}

@@ -1,0 +1,1 @@
+const express=require("express");const {autocompleteSearch}=require("../controllers/searchController");const {authenticate}=require("../middlewares/authMiddleware");const router=express.Router();router.use(authenticate);router.get("/autocomplete",autocompleteSearch);module.exports=router;

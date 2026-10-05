@@ -1,0 +1,1 @@
+function LotStatusBadge({status="available"}){return <span className={`status-badge status-${String(status).toLowerCase()}`}>{String(status).replaceAll("_"," ")}</span>};export default LotStatusBadge;

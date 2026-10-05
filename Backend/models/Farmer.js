@@ -1,0 +1,1 @@
+const mongoose=require("mongoose");const {Schema}=mongoose;const schema=new Schema({name:{type:String,required:true,trim:true},phone:{type:String,required:true,unique:true,trim:true},regionId:{type:Schema.Types.ObjectId,ref:"Region",required:true},farmIds:[{type:Schema.Types.ObjectId,ref:"Farm"}]},{timestamps:true});module.exports=mongoose.model("Farmer",schema);

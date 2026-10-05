@@ -1,0 +1,14 @@
+const express = require("express");
+const c = require("../controllers/vehicleController");
+const { authenticate } = require("../middlewares/authMiddleware");
+const { requireRole } = require("../middlewares/roleMiddleware");
+const router = express.Router();
+const logisticsRoles = requireRole("admin", "logistics", "warehouse_manager");
+router.use(authenticate);
+router.get("/", logisticsRoles, c.getVehicles);
+router.post("/", requireRole("admin", "logistics"), c.createVehicle);
+router.get("/:id", logisticsRoles, c.getVehicleById);
+router.put("/:id", requireRole("admin", "logistics"), c.updateVehicle);
+router.patch("/:id", requireRole("admin", "logistics"), c.updateVehicle);
+router.delete("/:id", requireRole("admin"), c.deleteVehicle);
+module.exports = router;
