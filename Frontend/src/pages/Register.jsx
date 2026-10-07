@@ -38,7 +38,7 @@ function Register() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-header">
-          <span className="eyebrow">Join AgriTrade</span>
+          <span className="eyebrow">Join AgriTrade · Sushrutha Reddy Rekireddy</span>
           <h1>Create account</h1>
           <p>
             Start with a farmer or buyer account. Administrator accounts are

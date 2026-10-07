@@ -63,7 +63,7 @@ export default function HomePage() {
         <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(255, 255, 255, 0.16)", padding: "6px 16px", borderRadius: 999, marginBottom: 18 }}>
           <span style={{ fontSize: 14 }}>🌾</span>
           <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase", color: "#dcfce7" }}>
-            AgriTrade · Digital Mandi & Fair Supply Chain
+            AgriTrade · Developed by Sushrutha Reddy Rekireddy
           </span>
         </div>
 
@@ -349,6 +349,108 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
+
+      {/* 6. Platform Developer Showcase Card */}
+      <section
+        className="card"
+        style={{
+          marginTop: 24,
+          background: "linear-gradient(135deg, rgba(6, 78, 59, 0.88) 0%, rgba(6, 95, 70, 0.82) 50%, rgba(4, 120, 87, 0.88) 100%)",
+          backdropFilter: "blur(14px)",
+          WebkitBackdropFilter: "blur(14px)",
+          border: "1.5px solid rgba(167, 243, 208, 0.45)",
+          borderRadius: 20,
+          padding: "26px 28px",
+          color: "#ffffff",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: 18,
+          boxShadow: "0 12px 35px rgba(6, 78, 59, 0.2)",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: "50%",
+              background: "linear-gradient(135deg, #10b981 0%, #047857 50%, #f59e0b 100%)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 20,
+              fontWeight: 900,
+              border: "2.5px solid #ffffff",
+              boxShadow: "0 4px 15px rgba(0,0,0,0.25)",
+              flexShrink: 0,
+            }}
+          >
+            SR
+          </div>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              <h3 style={{ margin: 0, fontSize: 18, fontWeight: 850, color: "#ffffff" }}>
+                Sushrutha Reddy Rekireddy
+              </h3>
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 800,
+                  background: "rgba(34, 197, 94, 0.25)",
+                  color: "#dcfce7",
+                  border: "1px solid #86efac",
+                  padding: "2px 8px",
+                  borderRadius: 999,
+                }}
+              >
+                Platform Developer & Creator
+              </span>
+            </div>
+            <p style={{ margin: "4px 0 0", fontSize: 13, color: "#e2e8f0", maxWidth: 620 }}>
+              Platform architect and developer of AgriTrade — digital mandi supply chain, verified harvest intake, freshness-first allocation, and seamless direct settlements.
+            </p>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: 10 }}>
+          <Link
+            to={token ? "/profile" : "/login"}
+            className="secondary-btn btn-animated"
+            style={{
+              padding: "10px 20px",
+              fontSize: 13,
+              fontWeight: 750,
+              background: "rgba(255, 255, 255, 0.2)",
+              color: "#ffffff",
+              border: "1px solid rgba(255, 255, 255, 0.4)",
+              textDecoration: "none",
+            }}
+          >
+            {token ? "View Profile →" : "Sign In to Platform →"}
+          </Link>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer
+        style={{
+          marginTop: 28,
+          textAlign: "center",
+          color: "#475569",
+          fontSize: 13,
+          fontWeight: 600,
+        }}
+      >
+        <p style={{ margin: 0 }}>
+          AgriTrade Digital Mandi · Designed, Engineered & Developed by{" "}
+          <strong style={{ color: "#065f46" }}>Sushrutha Reddy Rekireddy</strong>
+        </p>
+        <p style={{ margin: "4px 0 0", fontSize: 12, color: "#64748b" }}>
+          Empowering India's Farmers & Wholesale Buyers with Transparent Agricultural Trade.
+        </p>
+      </footer>
     </div>
   );
 }

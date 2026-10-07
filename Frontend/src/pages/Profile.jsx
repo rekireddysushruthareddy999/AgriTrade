@@ -633,6 +633,37 @@ function Profile() {
           </div>
         </div>
       )}
+
+      {/* Platform Developer Signature */}
+      <div
+        style={{
+          marginTop: 24,
+          padding: "16px 20px",
+          borderRadius: 14,
+          background: "linear-gradient(135deg, rgba(6, 78, 59, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%)",
+          border: "1px solid #a7f3d0",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: 12,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontSize: 20 }}>👨‍💻</span>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: "#065f46" }}>
+              AgriTrade Platform Creator & Developer
+            </div>
+            <div style={{ fontSize: 12, color: "#475569" }}>
+              Engineered & Crafted by <strong>Sushrutha Reddy Rekireddy</strong>
+            </div>
+          </div>
+        </div>
+        <span style={{ fontSize: 11, fontWeight: 700, color: "#059669", background: "#dcfce7", padding: "4px 10px", borderRadius: 999 }}>
+          Platform Developer: Sushrutha Reddy Rekireddy
+        </span>
+      </div>
     </div>
   );
 }

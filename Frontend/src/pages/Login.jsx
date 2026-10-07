@@ -32,7 +32,7 @@ function Login() {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-header">
-          <span className="eyebrow">AgriTrade Secure Access</span>
+          <span className="eyebrow">AgriTrade Secure Access · Sushrutha Reddy Rekireddy</span>
           <h1>Welcome back</h1>
           <p>Sign in to manage your agricultural supply chain operations.</p>
         </div>

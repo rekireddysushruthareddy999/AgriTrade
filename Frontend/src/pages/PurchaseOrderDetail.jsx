@@ -245,7 +245,7 @@ function PurchaseOrderDetail() {
       {allAllocatedLots.length > 0 && (
         <div className="card section-card" style={{ marginTop: 20 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <h2 style={{ margin: 0 }}>Allocated Produce Lots (FEFO Heap Audit)</h2>
+            <h2 style={{ margin: 0 }}>Allocated Produce Lots (Freshness & Expiry Priority)</h2>
             <span
               style={{
                 fontSize: 11,
