@@ -52,6 +52,7 @@ function Navbar() {
       "admin",
       "warehouse_manager",
       "farmer",
+      "buyer",
       "collection_center",
       "collection_center_staff",
     ].includes(role)
@@ -60,19 +61,6 @@ function Navbar() {
   }
 
   if (role === "admin") links.push(["/admin", "Admin"]);
-
-  const handleSearchSelect = (item) => {
-    if (!item) return;
-    if (item.type === "lot") {
-      navigate(`/lots/${item.id}`);
-    } else if (item.type === "farmer") {
-      navigate("/farmers");
-    } else if (item.type === "warehouse") {
-      navigate("/warehouse-inventory");
-    } else {
-      navigate("/lots");
-    }
-  };
 
   return (
     <nav className="topbar">
@@ -85,11 +73,107 @@ function Navbar() {
         <span>AgriTrade</span>
       </div>
 
-      <div style={{ flex: "0 1 320px", margin: "0 14px" }}>
-        <SearchAutocomplete
-          placeholder="🔍 Instant Trie Search..."
-          onSelect={handleSearchSelect}
-        />
+      {/* Stylish Name Pill in place of search bar: Sushrutha Reddy Rekireddy */}
+      <div
+        className="user-greeting-pill"
+        onClick={() => navigate("/profile")}
+        title="View profile: Sushrutha Reddy Rekireddy"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          background: "linear-gradient(135deg, rgba(16, 185, 129, 0.22) 0%, rgba(6, 95, 70, 0.35) 50%, rgba(245, 158, 11, 0.18) 100%)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          border: "1.5px solid rgba(167, 243, 208, 0.45)",
+          padding: "7px 18px 7px 8px",
+          borderRadius: 999,
+          cursor: "pointer",
+          margin: "0 18px",
+          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          boxShadow: "0 4px 15px rgba(0, 0, 0, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.25)",
+        }}
+      >
+        <div
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: "50%",
+            background: "linear-gradient(135deg, #10b981 0%, #047857 50%, #f59e0b 100%)",
+            color: "#ffffff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 15,
+            fontWeight: 850,
+            overflow: "hidden",
+            boxShadow: "0 2px 10px rgba(16, 185, 129, 0.45)",
+            border: "2px solid #ffffff",
+            flexShrink: 0,
+          }}
+        >
+          {user?.avatarUrl ? (
+            <img
+              src={user.avatarUrl}
+              alt="Sushrutha Reddy Rekireddy"
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : (
+            <span>SR</span>
+          )}
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.25 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span
+              style={{
+                color: "#ffffff",
+                fontWeight: 850,
+                fontSize: 14.5,
+                letterSpacing: "0.02em",
+                textShadow: "0 1px 3px rgba(0,0,0,0.3)",
+                background: "linear-gradient(90deg, #ffffff 0%, #dcfce7 65%, #fef08a 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              {user?.name && user.name.toLowerCase() !== "user" ? user.name : "Sushrutha Reddy Rekireddy"}
+            </span>
+            <span
+              style={{
+                width: 7,
+                height: 7,
+                borderRadius: "50%",
+                background: "#22c55e",
+                boxShadow: "0 0 8px #22c55e",
+                display: "inline-block",
+              }}
+              title="Active & Verified"
+            />
+          </div>
+          <span
+            style={{
+              color: "#a7f3d0",
+              fontSize: 10.5,
+              textTransform: "uppercase",
+              fontWeight: 750,
+              letterSpacing: "0.08em",
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+            }}
+          >
+            <span>✨</span>
+            <span>
+              {role === "farmer"
+                ? "Verified Grower & Producer"
+                : role === "buyer"
+                  ? "Verified Commercial Buyer"
+                  : role === "admin"
+                    ? "Platform Administrator"
+                    : "Premier Member"}
+            </span>
+          </span>
+        </div>
       </div>
 
       <div className="nav-links">

@@ -1208,5 +1208,15 @@ textarea:focus {
   height: 100vh;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.12;
+  opacity: 0.55;
+  filter: contrast(1.05) saturate(1.1);
+}
+
+.user-greeting-pill {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.user-greeting-pill:hover {
+  transform: translateY(-1px) scale(1.02);
+  background: rgba(255, 255, 255, 0.24) !important;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.4) !important;
 }

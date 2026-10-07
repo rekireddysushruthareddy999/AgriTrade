@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 
 const IMAGE_URLS = [
+  "/bg/1.jpg",
   "/bg/buffalos.jpeg",
   "/bg/harvest.jpg",
   "/bg/harvesting.jpg",
@@ -9,7 +10,7 @@ const IMAGE_URLS = [
   "/bg/basket.jpg",
   "/bg/container.jpg",
   "/bg/cotton.jpg",
-  "/bg/fruit-market.webp.jpg",
+  "/bg/fruit-market.webp",
   "/bg/hello.jpg",
   "/bg/leafy.jpg",
   "/bg/padddy.jpg",
@@ -33,13 +34,13 @@ const randomImage = (images) => images[Math.floor(Math.random() * images.length)
 function makeLane(index, count, w, h, images) {
   const laneW = w / count;
   const depth = Math.random();
-  const size = Math.min(laneW * 0.9, 90 + depth * 110);
-  const gap = 30 + Math.random() * 60;
+  const size = Math.min(laneW * 0.92, 100 + depth * 120);
+  const gap = 24 + Math.random() * 50;
   const lane = {
     x: laneW * (index + 0.5),
     laneW,
     dir: index % 2 === 0 ? -1 : 1,
-    speed: 18 + depth * 40,
+    speed: 22 + depth * 35,
     depth,
     size,
     gap,
@@ -60,16 +61,34 @@ function drawLane(ctx, lane) {
     const ratio = img.naturalWidth / img.naturalHeight;
     let h = lane.size;
     let w = h * ratio;
-    if (w > lane.laneW * 0.9) {
-      w = lane.laneW * 0.9;
+    if (w > lane.laneW * 0.92) {
+      w = lane.laneW * 0.92;
       h = w / ratio;
     }
+    const x = lane.x - w / 2;
+    const y = it.y - h / 2;
+    const radius = 12;
+
     ctx.save();
-    ctx.globalAlpha = 0.3 + lane.depth * 0.6;
-    ctx.shadowColor = "rgba(0,60,2,0.2)";
-    ctx.shadowBlur = 10 + lane.depth * 15;
-    ctx.shadowOffsetY = 4;
-    ctx.drawImage(img, lane.x - w / 2, it.y - h / 2, w, h);
+    ctx.globalAlpha = 0.7 + lane.depth * 0.3;
+    ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+    ctx.shadowBlur = 12;
+    ctx.shadowOffsetY = 5;
+
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + w - radius, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+    ctx.lineTo(x + w, y + h - radius);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+    ctx.lineTo(x + radius, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+    ctx.clip();
+
+    ctx.drawImage(img, x, y, w, h);
     ctx.restore();
   }
 }
@@ -79,6 +98,7 @@ export default function PaperBackground() {
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     const images = loadImages();
