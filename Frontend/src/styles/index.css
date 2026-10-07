@@ -116,25 +116,33 @@ button {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   flex: 1;
   justify-content: center;
-  overflow: auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.nav-links::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 .nav-links a {
   color: #e2e8f0;
   text-decoration: none;
-  padding: 8px 14px;
+  padding: 8px 15px;
   border-radius: 10px;
-  font-size: 0.88rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: 650;
   white-space: nowrap;
   transition: all 0.22s ease;
 }
 .nav-links a:hover,
 .nav-links a.active {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   transform: translateY(-1px);
 }
 .nav-user {
