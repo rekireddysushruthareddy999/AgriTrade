@@ -1,11 +1,16 @@
 const Lot = require("../models/Lot");
+const { getNearExpiryLotsFromHeap } = require("../dsa/warehouseAllocationHeap");
 
-const defaultAlertWindowDays = 3;
+const defaultAlertWindowDays = 5;
 
+/**
+ * DSA 4.1 Integration:
+ * Extracts near-expiry lots using the Warehouse Allocation Min-Heap.
+ */
 async function findLotsNearExpiry({
   lotModel = Lot,
   daysAhead = defaultAlertWindowDays,
-  includeStatuses = ["available", "reserved", "inspected", "shipped"],
+  includeStatuses = ["stored", "accepted", "available", "received"],
 } = {}) {
   if (!lotModel || typeof lotModel.find !== "function") {
     throw new Error("A valid Lot model is required.");
@@ -15,33 +20,34 @@ async function findLotsNearExpiry({
   const latestExpiryDate = new Date(currentDate);
   latestExpiryDate.setDate(currentDate.getDate() + Number(daysAhead));
 
-  const lots = await lotModel
+  const rawLots = await lotModel
     .find({
       status: { $in: includeStatuses },
+      quantity: { $gt: 0 },
       expiryEstimate: {
         $gte: currentDate,
         $lte: latestExpiryDate,
       },
     })
     .populate("farmerId", "name email phone")
-    .populate("produceCategoryId", "name")
-    .populate("warehouseId", "name location");
+    .populate("produceCategoryId", "name unit basePrice")
+    .populate("warehouseId", "name location capacity")
+    .lean();
 
-  return lots.map((lot) => ({
-    id: lot._id,
+  // Use Min-Heap to extract soonest-expiring lots in O(k log n)
+  const prioritizedExpiringLots = getNearExpiryLotsFromHeap(rawLots, daysAhead);
+
+  return prioritizedExpiringLots.map((lot) => ({
+    id: lot._id || lot.id,
     farmer: lot.farmerId || null,
     produceCategory: lot.produceCategoryId || null,
     warehouse: lot.warehouseId || null,
     quantity: lot.quantity,
     status: lot.status,
+    grade: lot.grade,
     harvestDate: lot.harvestDate,
     expiryEstimate: lot.expiryEstimate,
-    daysRemaining: Math.max(
-      0,
-      Math.ceil(
-        (new Date(lot.expiryEstimate) - currentDate) / (1000 * 60 * 60 * 24),
-      ),
-    ),
+    daysRemaining: lot.daysRemaining,
   }));
 }
 
@@ -62,10 +68,11 @@ async function nearExpiryAlertJob({
     windowDays: Number(daysAhead),
     total: lots.length,
     lots,
+    algorithm: "WarehouseAllocationHeap (FEFO Min-Heap)",
   };
 
   if (logger && typeof logger.info === "function") {
-    logger.info("Near-expiry lot alert job completed", {
+    logger.info("Near-expiry lot alert job completed using Min-Heap", {
       total: alertSummary.total,
       windowDays: alertSummary.windowDays,
     });
@@ -98,7 +105,7 @@ function startNearExpiryAlertJob({
         }
       } catch (error) {
         if (logger && typeof logger.error === "function") {
-          logger.error("Near-expiry alert job failed", error);
+          logger.error(`Near-expiry alert job failed: ${error.message}`);
         }
       }
     });
@@ -106,18 +113,13 @@ function startNearExpiryAlertJob({
     return job;
   } catch (error) {
     if (logger && typeof logger.warn === "function") {
-      logger.warn(
-        "node-cron is not installed. The job was registered without a scheduler.",
-        error.message,
-      );
+      logger.warn(`Could not start cron job: ${error.message}`);
     }
-
     return null;
   }
 }
 
 module.exports = {
-  defaultAlertWindowDays,
   findLotsNearExpiry,
   nearExpiryAlertJob,
   startNearExpiryAlertJob,

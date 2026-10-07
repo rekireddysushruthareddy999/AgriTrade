@@ -2,11 +2,13 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const bcrypt = require("bcryptjs");
 dotenv.config();
+
 const User = require("../models/User");
 const Farmer = require("../models/Farmer");
 const Farm = require("../models/Farm");
 const ProduceCategory = require("../models/ProduceCategory");
 const Lot = require("../models/Lot");
+const Inspection = require("../models/Inspection");
 const Warehouse = require("../models/Warehouse");
 const Vehicle = require("../models/Vehicle");
 const Region = require("../models/Region");
@@ -14,225 +16,476 @@ const PurchaseOrder = require("../models/PurchaseOrder");
 const PurchaseOrderItem = require("../models/PurchaseOrderItem");
 const Shipment = require("../models/Shipment");
 const Settlement = require("../models/Settlement");
+
 async function seedData() {
-  const region = await Region.findOneAndUpdate(
-    { code: "KA" },
+  console.log("Starting AgriTrade comprehensive database seed...");
+
+  // 1. Seed Regions
+  const regions = [];
+  const regionData = [
+    { name: "Telangana", code: "TG" },
+    { name: "Andhra Pradesh", code: "AP" },
     { name: "Karnataka", code: "KA" },
-    { upsert: true, new: true, setDefaultsOnInsert: true },
-  );
-  const passwords = await Promise.all(
-    ["Admin@12345", "Farmer@12345", "Buyer@12345"].map((p) =>
-      bcrypt.hash(p, 12),
-    ),
-  );
-  const users = [];
-  for (const data of [
+  ];
+
+  for (const r of regionData) {
+    let reg = await Region.findOne({ $or: [{ code: r.code }, { name: r.name }] });
+    if (!reg) {
+      reg = await Region.create(r);
+    } else {
+      reg.name = r.name;
+      reg.code = r.code;
+      await reg.save();
+    }
+    regions.push(reg);
+  }
+  const defaultRegion = regions[0]; // Telangana
+
+  // 2. Seed Users across all 6 Roles
+  const passwordHash = await bcrypt.hash("AgriTrade@2028", 10);
+  const usersToSeed = [
     {
-      name: "Admin User",
+      name: "System Admin",
       email: "admin@agritrade.com",
       phone: "9000000001",
       role: "admin",
+      regionId: defaultRegion._id,
     },
     {
-      name: "Farmer One",
+      name: "Ramesh Farmer",
       email: "farmer1@agritrade.com",
       phone: "9000000002",
       role: "farmer",
+      regionId: defaultRegion._id,
     },
     {
-      name: "Buyer One",
-      email: "buyer1@agritrade.com",
+      name: "Suresh Farmer",
+      email: "farmer2@agritrade.com",
       phone: "9000000003",
-      role: "buyer",
+      role: "farmer",
+      regionId: defaultRegion._id,
     },
-  ]) {
-    const idx = users.length;
-    users.push(
-      await User.findOneAndUpdate(
-        { email: data.email },
-        { ...data, passwordHash: passwords[idx], regionId: region._id },
-        { upsert: true, new: true, setDefaultsOnInsert: true },
-      ),
+    {
+      name: "Nalgonda CC Staff",
+      email: "staff@agritrade.com",
+      phone: "9000000004",
+      role: "collection_center",
+      regionId: defaultRegion._id,
+    },
+    {
+      name: "Quality Inspector Rao",
+      email: "inspector@agritrade.com",
+      phone: "9000000005",
+      role: "inspector",
+      regionId: defaultRegion._id,
+    },
+    {
+      name: "AgriRetail Buyer",
+      email: "buyer1@agritrade.com",
+      phone: "9000000006",
+      role: "buyer",
+      regionId: defaultRegion._id,
+    },
+    {
+      name: "Express Logistics Lead",
+      email: "logistics@agritrade.com",
+      phone: "9000000007",
+      role: "logistics",
+      regionId: defaultRegion._id,
+    },
+  ];
+
+  const seededUsers = {};
+  for (const u of usersToSeed) {
+    const userDoc = await User.findOneAndUpdate(
+      { email: u.email },
+      { ...u, passwordHash },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
     );
+    seededUsers[u.role] = userDoc;
   }
+
+  // 3. Seed Farmers
+  const farmersData = [
+    {
+      name: "Ramesh Patel",
+      phone: "9000000002",
+      regionId: defaultRegion._id,
+      userId: seededUsers.farmer._id,
+    },
+    {
+      name: "Suresh Reddy",
+      phone: "9000000003",
+      regionId: defaultRegion._id,
+    },
+    {
+      name: "Kavitha Sharma",
+      phone: "9876543210",
+      regionId: regions[1]._id, // Andhra
+    },
+  ];
+
   const farmers = [];
-  for (const data of [
-    { name: "Farmer One", phone: "9000000002" },
-    { name: "Kiran Gowda", phone: "9876543210" },
-    { name: "Nagaraj Reddy", phone: "9123456780" },
-  ])
-    farmers.push(
-      await Farmer.findOneAndUpdate(
-        { phone: data.phone },
-        { ...data, regionId: region._id },
-        { upsert: true, new: true, setDefaultsOnInsert: true },
-      ),
+  for (const f of farmersData) {
+    const farmer = await Farmer.findOneAndUpdate(
+      { phone: f.phone },
+      f,
+      { upsert: true, new: true, setDefaultsOnInsert: true }
     );
-  const categories = [];
-  for (const data of [
+    farmers.push(farmer);
+  }
+
+  // 4. Seed Produce Categories with Configurable Grading Criteria
+  const produceCategoriesData = [
     {
       name: "Tomato",
       unit: "kg",
+      basePrice: 28,
       gradingCriteria: [
-        { name: "Freshness", weight: 40 },
-        { name: "Appearance", weight: 30 },
-        { name: "Size", weight: 30 },
+        { name: "Firmness", weight: 35 },
+        { name: "Color & Ripeness", weight: 35 },
+        { name: "Size Uniformity", weight: 30 },
+      ],
+    },
+    {
+      name: "Red Chilli",
+      unit: "kg",
+      basePrice: 165,
+      gradingCriteria: [
+        { name: "Moisture Content", weight: 40 },
+        { name: "Color Intensity", weight: 35 },
+        { name: "Pungency / Capsaicin", weight: 25 },
       ],
     },
     {
       name: "Onion",
       unit: "kg",
+      basePrice: 32,
       gradingCriteria: [
-        { name: "Firmness", weight: 50 },
-        { name: "Appearance", weight: 50 },
+        { name: "Dry Outer Skin", weight: 40 },
+        { name: "Sprouting Absence", weight: 35 },
+        { name: "Diameter / Size", weight: 25 },
       ],
     },
     {
-      name: "Banana",
-      unit: "kg",
+      name: "Sona Masoori Rice",
+      unit: "quintal",
+      basePrice: 3200,
       gradingCriteria: [
-        { name: "Ripeness", weight: 60 },
-        { name: "Appearance", weight: 40 },
+        { name: "Broken Grain %", weight: 40 },
+        { name: "Foreign Matter", weight: 30 },
+        { name: "Grain Length", weight: 30 },
       ],
     },
-  ])
-    categories.push(
-      await ProduceCategory.findOneAndUpdate({ name: data.name }, data, {
-        upsert: true,
-        new: true,
-        setDefaultsOnInsert: true,
-      }),
+  ];
+
+  const categories = [];
+  for (const cat of produceCategoriesData) {
+    const category = await ProduceCategory.findOneAndUpdate(
+      { name: cat.name },
+      cat,
+      { upsert: true, new: true, setDefaultsOnInsert: true }
     );
-  const warehouse = await Warehouse.findOneAndUpdate(
-    { name: "Harvest Hub" },
+    categories.push(category);
+  }
+
+  // 5. Seed Warehouses with Geographical Coordinates
+  const warehousesData = [
     {
-      name: "Harvest Hub",
-      location: "Bengaluru",
-      regionId: region._id,
-      capacity: 2000,
+      name: "Nalgonda Collection Center",
+      location: "Nalgonda Mandi",
+      regionId: defaultRegion._id,
+      capacity: 5000,
+      currentStock: 1200,
+      coordinates: { latitude: 17.0575, longitude: 79.2684 },
     },
-    { upsert: true, new: true, setDefaultsOnInsert: true },
-  );
-  await Farm.findOneAndUpdate(
-    { farmerId: farmers[0]._id, location: "Bengaluru" },
+    {
+      name: "Suryapet Grain Warehouse",
+      location: "Suryapet Bypass",
+      regionId: defaultRegion._id,
+      capacity: 8000,
+      currentStock: 2400,
+      coordinates: { latitude: 17.1439, longitude: 79.6239 },
+    },
+    {
+      name: "Hyderabad Central Logistics Hub",
+      location: "Kothapet / LB Nagar",
+      regionId: defaultRegion._id,
+      capacity: 15000,
+      currentStock: 4500,
+      coordinates: { latitude: 17.385, longitude: 78.4867 },
+    },
+  ];
+
+  const warehouses = [];
+  for (const w of warehousesData) {
+    const wh = await Warehouse.findOneAndUpdate(
+      { name: w.name },
+      w,
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+    warehouses.push(wh);
+  }
+
+  // 6. Seed Farms
+  const farms = [];
+  const farmRecords = [
     {
       farmerId: farmers[0]._id,
-      location: "Bengaluru",
-      sizeAcres: 25,
-      produceGrown: [categories[0]._id],
+      location: "Miryalaguda, Nalgonda",
+      sizeAcres: 18,
+      produceGrown: [categories[0]._id, categories[2]._id],
+      coordinates: { latitude: 16.8724, longitude: 79.5638 },
     },
-    { upsert: true, new: true, setDefaultsOnInsert: true },
-  );
-  await Farm.findOneAndUpdate(
-    { farmerId: farmers[1]._id, location: "Mysuru" },
     {
       farmerId: farmers[1]._id,
-      location: "Mysuru",
-      sizeAcres: 30,
-      produceGrown: [categories[2]._id],
+      location: "Suryapet Rural",
+      sizeAcres: 24,
+      produceGrown: [categories[1]._id, categories[3]._id],
+      coordinates: { latitude: 17.15, longitude: 79.61 },
     },
-    { upsert: true, new: true, setDefaultsOnInsert: true },
-  );
-  await Lot.findOneAndUpdate(
-    { groupId: "GROUP-1" },
+  ];
+
+  for (const f of farmRecords) {
+    const farm = await Farm.findOneAndUpdate(
+      { location: f.location },
+      f,
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+    farms.push(farm);
+    await Farmer.findByIdAndUpdate(f.farmerId, { $addToSet: { farmIds: farm._id } });
+  }
+
+  // 7. Seed Produce Lots Across Lifecycle States
+  const now = new Date();
+  const dayMs = 24 * 60 * 60 * 1000;
+
+  const lotsData = [
+    {
+      farmerId: farmers[0]._id,
+      produceCategoryId: categories[0]._id, // Tomato
+      quantity: 500,
+      status: "stored", // Ready for FEFO allocation
+      grade: "A",
+      pricePerUnit: 30,
+      harvestDate: new Date(now.getTime() - 2 * dayMs),
+      expiryEstimate: new Date(now.getTime() + 3 * dayMs), // Soon to expire! FEFO priority
+      warehouseId: warehouses[0]._id,
+      groupId: "LOT-TOM-001",
+    },
+    {
+      farmerId: farmers[0]._id,
+      produceCategoryId: categories[0]._id, // Tomato
+      quantity: 800,
+      status: "stored",
+      grade: "B",
+      pricePerUnit: 26,
+      harvestDate: new Date(now.getTime() - 1 * dayMs),
+      expiryEstimate: new Date(now.getTime() + 8 * dayMs), // Later expiry
+      warehouseId: warehouses[0]._id,
+      groupId: "LOT-TOM-002",
+    },
+    {
+      farmerId: farmers[1]._id,
+      produceCategoryId: categories[1]._id, // Chilli
+      quantity: 400,
+      status: "accepted",
+      grade: "A",
+      pricePerUnit: 175,
+      harvestDate: new Date(now.getTime() - 4 * dayMs),
+      expiryEstimate: new Date(now.getTime() + 60 * dayMs),
+      warehouseId: warehouses[1]._id,
+      groupId: "LOT-CHL-003",
+    },
+    {
+      farmerId: farmers[1]._id,
+      produceCategoryId: categories[2]._id, // Onion
+      quantity: 1200,
+      status: "created",
+      harvestDate: new Date(now.getTime()),
+      expiryEstimate: new Date(now.getTime() + 30 * dayMs),
+      warehouseId: null,
+      groupId: "LOT-ONI-004",
+    },
     {
       farmerId: farmers[0]._id,
       produceCategoryId: categories[0]._id,
-      quantity: 120,
+      quantity: 350,
+      status: "received",
+      harvestDate: new Date(now.getTime() - 1 * dayMs),
+      expiryEstimate: new Date(now.getTime() + 6 * dayMs),
+      warehouseId: warehouses[0]._id,
+      groupId: "LOT-TOM-005",
+    },
+  ];
+
+  const lots = [];
+  for (const l of lotsData) {
+    const lot = await Lot.findOneAndUpdate(
+      { groupId: l.groupId },
+      l,
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+    lots.push(lot);
+  }
+
+  // 8. Seed Inspections for Inspected Lots
+  await Inspection.findOneAndUpdate(
+    { lotId: lots[0]._id },
+    {
+      lotId: lots[0]._id,
+      inspectorId: seededUsers.inspector._id,
+      grade: "A",
+      criteriaScores: [
+        { name: "Firmness", score: 92 },
+        { name: "Color & Ripeness", score: 88 },
+        { name: "Size Uniformity", score: 85 },
+      ],
+      notes: "Grade A tomatoes, optimal firmness, early harvest.",
+      inspectedAt: new Date(now.getTime() - 1 * dayMs),
+    },
+    { upsert: true, new: true, setDefaultsOnInsert: true }
+  );
+
+  // 9. Seed Vehicles
+  const vehiclesData = [
+    {
+      regNumber: "TS08UA1234",
+      capacity: 3000,
       status: "available",
-      harvestDate: new Date("2026-09-01"),
-      expiryEstimate: new Date("2026-10-10"),
-      warehouseId: warehouse._id,
-      groupId: "GROUP-1",
+      currentLocation: "Nalgonda Mandi",
+      coordinates: { latitude: 17.0575, longitude: 79.2684 },
     },
-    { upsert: true, new: true, setDefaultsOnInsert: true },
-  );
-  await Lot.findOneAndUpdate(
-    { groupId: "GROUP-2" },
     {
-      farmerId: farmers[1]._id,
-      produceCategoryId: categories[1]._id,
-      quantity: 180,
-      status: "inspected",
-      harvestDate: new Date("2026-09-02"),
-      expiryEstimate: new Date("2026-10-12"),
-      warehouseId: warehouse._id,
-      groupId: "GROUP-2",
-    },
-    { upsert: true, new: true, setDefaultsOnInsert: true },
-  );
-  const vehicle = await Vehicle.findOneAndUpdate(
-    { regNumber: "KA01AB1234" },
-    {
-      regNumber: "KA01AB1234",
-      capacity: 500,
+      regNumber: "TS09XB5678",
+      capacity: 6000,
       status: "available",
-      currentLocation: "Bengaluru",
+      currentLocation: "Hyderabad Central Logistics Hub",
+      coordinates: { latitude: 17.385, longitude: 78.4867 },
     },
-    { upsert: true, new: true, setDefaultsOnInsert: true },
-  );
-  await Vehicle.findOneAndUpdate(
-    { regNumber: "KA02CD5678" },
-    {
-      regNumber: "KA02CD5678",
-      capacity: 250,
-      status: "in_transit",
-      currentLocation: "Mysuru",
-    },
-    { upsert: true, new: true, setDefaultsOnInsert: true },
-  );
-  const deliveryDeadline = new Date("2026-10-16T00:00:00.000Z");
+  ];
+
+  const vehicles = [];
+  for (const v of vehiclesData) {
+    const vehicle = await Vehicle.findOneAndUpdate(
+      { regNumber: v.regNumber },
+      v,
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+    vehicles.push(vehicle);
+  }
+
+  // 10. Seed Purchase Order with Line Items
+  const deliveryDeadline = new Date(now.getTime() + 5 * dayMs);
   const order = await PurchaseOrder.findOneAndUpdate(
-    { buyerId: users[2]._id, deliveryDeadline },
-    { buyerId: users[2]._id, deliveryDeadline, status: "approved" },
-    { upsert: true, new: true, setDefaultsOnInsert: true },
+    { buyerId: seededUsers.buyer._id, status: "pending" },
+    {
+      buyerId: seededUsers.buyer._id,
+      status: "pending",
+      deliveryDeadline,
+      deliveryLocation: {
+        address: "Guntur Agri Processing Plant",
+        latitude: 16.3067,
+        longitude: 80.4365,
+      },
+      regionId: defaultRegion._id,
+      notes: "Urgent procurement of Grade A tomatoes for retail distribution.",
+    },
+    { upsert: true, new: true, setDefaultsOnInsert: true }
   );
+
   await PurchaseOrderItem.findOneAndUpdate(
     { purchaseOrderId: order._id, produceCategoryId: categories[0]._id },
     {
       purchaseOrderId: order._id,
       produceCategoryId: categories[0]._id,
-      quantityRequested: 100,
+      quantityRequested: 400,
       quantityFulfilled: 0,
+      allocatedLots: [],
     },
-    { upsert: true, new: true, setDefaultsOnInsert: true },
+    { upsert: true, new: true, setDefaultsOnInsert: true }
   );
+
+  // 11. Seed Shipments with Dijkstra Waypoints
   await Shipment.findOneAndUpdate(
     { purchaseOrderId: order._id },
     {
       purchaseOrderId: order._id,
-      vehicleId: vehicle._id,
-      stops: ["Bengaluru", "Harvest Hub"],
+      vehicleId: vehicles[0]._id,
+      stops: [
+        { id: "NALGONDA_CC", name: "Nalgonda Collection Center" },
+        { id: "SURYAPET_WH", name: "Suryapet Grain Warehouse" },
+        { id: "GUNTUR_BUYER", name: "Guntur Agri Processing Plant" },
+      ],
+      routeDetails: {
+        totalDistanceKm: 241,
+        optimalSequence: [
+          { id: "NALGONDA_CC", name: "Nalgonda Collection Center" },
+          { id: "SURYAPET_WH", name: "Suryapet Grain Warehouse" },
+          { id: "GUNTUR_BUYER", name: "Guntur Agri Processing Plant" },
+        ],
+        legDetails: [
+          { from: "NALGONDA_CC", to: "SURYAPET_WH", distanceKm: 42, estimatedTimeMinutes: 50 },
+          { from: "SURYAPET_WH", to: "GUNTUR_BUYER", distanceKm: 199, estimatedTimeMinutes: 240 },
+        ],
+      },
       status: "pending",
     },
-    { upsert: true, new: true, setDefaultsOnInsert: true },
+    { upsert: true, new: true, setDefaultsOnInsert: true }
   );
+
+  // 12. Seed Settlement with Union-Find Grouping
   await Settlement.findOneAndUpdate(
     { farmerId: farmers[0]._id, cycle: 1 },
     {
       farmerId: farmers[0]._id,
-      lotIds: [],
+      lotIds: [lots[0]._id],
       cycle: 1,
-      grossAmount: 12000,
-      deductions: 600,
-      netAmount: 11400,
+      batchGroupId: "BATCH_C1_F000001_SETTLED",
+      grossAmount: 15000,
+      deductions: 675,
+      netAmount: 14325,
+      breakdown: {
+        taxValue: 300,
+        commissionValue: 225,
+        freightValue: 150,
+      },
       status: "pending",
     },
-    { upsert: true, new: true, setDefaultsOnInsert: true },
+    { upsert: true, new: true, setDefaultsOnInsert: true }
   );
-  return { users, farmers, categories, warehouse };
+
+  console.log("Database seeded successfully!");
+  console.log("Credentials:");
+  console.log(" - Admin: admin@agritrade.com / AgriTrade@2028");
+  console.log(" - Farmer: farmer1@agritrade.com / AgriTrade@2028");
+  console.log(" - Staff: staff@agritrade.com / AgriTrade@2028");
+  console.log(" - Inspector: inspector@agritrade.com / AgriTrade@2028");
+  console.log(" - Buyer: buyer1@agritrade.com / AgriTrade@2028");
+  console.log(" - Logistics: logistics@agritrade.com / AgriTrade@2028");
+
+  return {
+    regions,
+    users: seededUsers,
+    farmers,
+    categories,
+    warehouses,
+    lots,
+  };
 }
+
 if (require.main === module) {
   mongoose
-    .connect(process.env.MONGO_URL || "mongodb://localhost:27017/agritrade")
+    .connect(process.env.MONGO_URL || "mongodb://127.0.0.1:27017/agritrade")
     .then(seedData)
     .then(() => {
-      console.log("Database seeding completed.");
+      console.log("Seeding finished.");
       process.exit(0);
     })
-    .catch((e) => {
-      console.error("Seeding failed:", e.message);
+    .catch((err) => {
+      console.error("Seeding failed:", err.message);
       process.exit(1);
     });
 }
+
 module.exports = { seedData };
