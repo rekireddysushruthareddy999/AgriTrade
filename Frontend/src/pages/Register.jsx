@@ -14,7 +14,9 @@ function Register() {
       regionId: "",
     }),
     [error, setError] = useState(""),
-    [loading, setLoading] = useState(false);
+    [loading, setLoading] = useState(false),
+    [showPass, setShowPass] = useState(false),
+    [showConfirmPass, setShowConfirmPass] = useState(false);
   const submit = async (e) => {
     e.preventDefault();
     setError("");
@@ -92,30 +94,74 @@ function Register() {
           </label>
           <label>
             Password
-            <input
-              type="password"
-              autoComplete="new-password"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              minLength={8}
-              required
-            />
+            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+              <input
+                type={showPass ? "text" : "password"}
+                autoComplete="new-password"
+                placeholder="At least 8 characters"
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                minLength={8}
+                required
+                style={{ paddingRight: 44 }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPass(!showPass)}
+                title={showPass ? "Hide password" : "Show password"}
+                style={{
+                  position: "absolute",
+                  right: 10,
+                  background: "transparent",
+                  border: 0,
+                  fontSize: 18,
+                  cursor: "pointer",
+                  color: "#64748b",
+                  boxShadow: "none",
+                  padding: "4px 6px",
+                }}
+              >
+                {showPass ? "🙈" : "👁️"}
+              </button>
+            </div>
           </label>
           <label>
             Confirm password
-            <input
-              type="password"
-              autoComplete="new-password"
-              value={form.confirmPassword}
-              onChange={(e) =>
-                setForm({ ...form, confirmPassword: e.target.value })
-              }
-              required
-            />
+            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+              <input
+                type={showConfirmPass ? "text" : "password"}
+                autoComplete="new-password"
+                placeholder="Repeat password"
+                value={form.confirmPassword}
+                onChange={(e) =>
+                  setForm({ ...form, confirmPassword: e.target.value })
+                }
+                required
+                style={{ paddingRight: 44 }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPass(!showConfirmPass)}
+                title={showConfirmPass ? "Hide password" : "Show password"}
+                style={{
+                  position: "absolute",
+                  right: 10,
+                  background: "transparent",
+                  border: 0,
+                  fontSize: 18,
+                  cursor: "pointer",
+                  color: "#64748b",
+                  boxShadow: "none",
+                  padding: "4px 6px",
+                }}
+              >
+                {showConfirmPass ? "🙈" : "👁️"}
+              </button>
+            </div>
           </label>
           {error && <div className="message error">{error}</div>}
-          <button disabled={loading}>
-            {loading ? "Creating…" : "Create account"}
+          <button type="submit" className="primary-btn btn-animated" disabled={loading} style={{ width: "100%", marginTop: 6 }}>
+            {loading ? "Creating Account…" : "Create AgriTrade Account →"}
           </button>
         </form>
         <div className="auth-footer">

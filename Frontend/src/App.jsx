@@ -20,6 +20,7 @@ import WarehouseInventory from "./pages/WarehouseInventory";
 import ShipmentTracker from "./pages/ShipmentTracker";
 import SettlementList from "./pages/SettlementList";
 import AdminSettings from "./pages/AdminSettings";
+import Profile from "./pages/Profile";
 
 function NotFound() {
   return (
@@ -48,6 +49,7 @@ function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/farmers" element={<FarmerList />} />
               <Route path="/lots" element={<LotList />} />
               <Route path="/lots/:id" element={<LotDetail />} />

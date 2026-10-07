@@ -56,6 +56,21 @@ const userSchema = new Schema(
       default: null,
       trim: true,
     },
+    avatarUrl: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    address: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    bio: {
+      type: String,
+      default: "",
+      trim: true,
+    },
     resetToken: {
       type: String,
       default: null,

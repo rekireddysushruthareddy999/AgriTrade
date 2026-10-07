@@ -50,6 +50,9 @@ async function seedData() {
       phone: "9000000001",
       role: "admin",
       regionId: defaultRegion._id,
+      avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80",
+      address: "Telangana State Agricultural Directorate, Hyderabad",
+      bio: "AgriTrade System Administrator overseeing regional collections, FEFO allocation, and settlement cycles.",
     },
     {
       name: "Ramesh Farmer",
@@ -57,6 +60,9 @@ async function seedData() {
       phone: "9000000002",
       role: "farmer",
       regionId: defaultRegion._id,
+      avatarUrl: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=500&auto=format&fit=crop&q=80",
+      address: "Green Valley Farms, Miryalaguda, Nalgonda",
+      bio: "Organic cultivator specializing in Vine Tomatoes, Guntur Red Chilli, and Sona Masoori Paddy.",
     },
     {
       name: "Suresh Farmer",
@@ -64,6 +70,9 @@ async function seedData() {
       phone: "9000000003",
       role: "farmer",
       regionId: defaultRegion._id,
+      avatarUrl: "https://images.unsplash.com/photo-1595273670150-bd0c3c392e46?w=500&auto=format&fit=crop&q=80",
+      address: "Surya Agro Farms, Suryapet, Telangana",
+      bio: "Commercial farmer supplying high-yield Nashik Red Onions and Cotton to state collection hubs.",
     },
     {
       name: "Nalgonda CC Staff",
@@ -71,6 +80,9 @@ async function seedData() {
       phone: "9000000004",
       role: "collection_center",
       regionId: defaultRegion._id,
+      avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80",
+      address: "Nalgonda APMC Mandi Intake Hub #3",
+      bio: "Collection Center Lead coordinating daily harvest check-ins and batch onboarding.",
     },
     {
       name: "Quality Inspector Rao",
@@ -78,6 +90,9 @@ async function seedData() {
       phone: "9000000005",
       role: "inspector",
       regionId: defaultRegion._id,
+      avatarUrl: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=500&auto=format&fit=crop&q=80",
+      address: "Regional Quality Assay Laboratory, Warangal",
+      bio: "Certified Produce Grader performing multi-criteria quality scoring (Grade A-F).",
     },
     {
       name: "AgriRetail Buyer",
@@ -85,6 +100,9 @@ async function seedData() {
       phone: "9000000006",
       role: "buyer",
       regionId: defaultRegion._id,
+      avatarUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=500&auto=format&fit=crop&q=80",
+      address: "FreshDirect Food Corp, Begumpet, Hyderabad",
+      bio: "Wholesale food distributor sourcing perishable and staple produce lots for supermarket chains.",
     },
     {
       name: "Express Logistics Lead",
@@ -92,6 +110,9 @@ async function seedData() {
       phone: "9000000007",
       role: "logistics",
       regionId: defaultRegion._id,
+      avatarUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=500&auto=format&fit=crop&q=80",
+      address: "Telangana Logistics Depot, Shamshabad",
+      bio: "Fleet coordinator optimizing multi-stop dispatch routes via Dijkstra algorithm.",
     },
   ];
 

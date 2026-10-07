@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const Farmer = require("../models/Farmer");
 const Region = require("../models/Region");
+const Lot = require("../models/Lot");
+const PurchaseOrder = require("../models/PurchaseOrder");
 const { getJwtSecret } = require("../config/env");
 const { successResponse } = require("../utils/apiResponse");
 const getSecret = () => getJwtSecret();
@@ -50,6 +52,9 @@ const sanitizeUser = (u) => ({
   phone: u.phone,
   role: u.role,
   regionId: u.regionId,
+  avatarUrl: u.avatarUrl || "",
+  address: u.address || "",
+  bio: u.bio || "",
   createdAt: u.createdAt,
 });
 const generateToken = (u) =>
@@ -228,6 +233,65 @@ const refresh = async (req, res) => {
     });
   }
 };
+
+const getProfile = async (req, res) => {
+  const user = await User.findById(req.user.id).populate("regionId").lean();
+  if (!user) {
+    return res.status(404).json({ success: false, message: "User not found." });
+  }
+
+  let stats = {};
+  if (user.role === "farmer") {
+    const lots = await Lot.find({ farmerId: req.user.id }).lean();
+    const totalQty = lots.reduce((sum, l) => sum + (l.quantity || 0), 0);
+    const deliveredCount = lots.filter((l) => ["delivered", "settled"].includes(l.status)).length;
+    stats = {
+      totalLots: lots.length,
+      totalProduceQuantity: totalQty,
+      deliveredLots: deliveredCount,
+      activeLots: lots.length - deliveredCount,
+    };
+  } else if (user.role === "buyer") {
+    const orders = await PurchaseOrder.find({ buyerId: req.user.id }).lean();
+    const deliveredCount = orders.filter((o) => o.status === "delivered").length;
+    stats = {
+      totalOrders: orders.length,
+      deliveredOrders: deliveredCount,
+      activeOrders: orders.length - deliveredCount,
+    };
+  }
+
+  return successResponse(res, 200, "Profile retrieved successfully.", {
+    user: sanitizeUser(user),
+    stats,
+  });
+};
+
+const updateProfile = async (req, res) => {
+  const { name, phone, avatarUrl, address, bio } = req.body;
+  const user = await User.findById(req.user.id);
+  if (!user) {
+    return res.status(404).json({ success: false, message: "User not found." });
+  }
+
+  if (name && typeof name === "string") user.name = name.trim();
+  if (phone && typeof phone === "string") user.phone = phone.trim();
+  if (avatarUrl !== undefined) user.avatarUrl = String(avatarUrl).trim();
+  if (address !== undefined) user.address = String(address).trim();
+  if (bio !== undefined) user.bio = String(bio).trim();
+
+  await user.save();
+
+  if (user.role === "farmer") {
+    await Farmer.findOneAndUpdate(
+      { $or: [{ phone: user.phone }, { name: user.name }] },
+      { name: user.name, phone: user.phone, ...(address ? { location: address } : {}) }
+    );
+  }
+
+  return successResponse(res, 200, "Profile updated successfully.", sanitizeUser(user));
+};
+
 module.exports = {
   register,
   login,
@@ -236,4 +300,6 @@ module.exports = {
   refresh,
   getSecret,
   resolveRegionId,
+  getProfile,
+  updateProfile,
 };

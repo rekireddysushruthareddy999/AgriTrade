@@ -101,12 +101,57 @@ function Navbar() {
       </div>
 
       <div className="nav-user">
-        <span className="user-chip" title={`Role: ${role}`}>
-          {user?.name || "User"}{" "}
-          <small style={{ opacity: 0.75, fontSize: 10 }}>({role})</small>
-        </span>
+        <NavLink
+          to="/profile"
+          className="user-chip"
+          title={`View Profile (${role})`}
+          style={{
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            cursor: "pointer",
+            background: "rgba(255,255,255,0.12)",
+            padding: "5px 12px 5px 6px",
+            borderRadius: 999,
+            transition: "all 0.2s ease",
+          }}
+        >
+          {user?.avatarUrl ? (
+            <img
+              src={user.avatarUrl}
+              alt={user.name}
+              style={{
+                width: 26,
+                height: 26,
+                borderRadius: "50%",
+                objectFit: "cover",
+                border: "1.5px solid #a7f3d0",
+                display: "block",
+              }}
+            />
+          ) : (
+            <span style={{ fontSize: 16, lineHeight: 1 }}>
+              {role === "farmer" ? "👨‍🌾" : role === "buyer" ? "🛒" : role === "inspector" ? "🔬" : role === "admin" ? "👑" : "👤"}
+            </span>
+          )}
+          <span style={{ color: "#ffffff", fontWeight: 700, fontSize: 13 }}>
+            {user?.name || "User"}
+          </span>
+          <small
+            style={{
+              color: "#a7f3d0",
+              fontSize: 10,
+              textTransform: "uppercase",
+              fontWeight: 800,
+              letterSpacing: 0.5,
+            }}
+          >
+            {role?.slice(0, 7)}
+          </small>
+        </NavLink>
         <button
-          className="logout-btn"
+          className="logout-btn btn-animated"
           onClick={() => {
             logout();
             navigate("/login");

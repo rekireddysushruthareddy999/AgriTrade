@@ -50,9 +50,16 @@ export function AuthProvider({ children }) {
 
   const register = async (payload) => (await axiosInstance.post("/auth/register", payload)).data;
 
+  const updateUser = useCallback((updatedUserData) => {
+    setUser((prev) => ({ ...prev, ...updatedUserData }));
+  }, []);
+
   const logout = useCallback(() => clearSession(), [clearSession]);
 
-  const value = useMemo(() => ({ user, token, loading, login, register, logout }), [user, token, loading, logout]);
+  const value = useMemo(
+    () => ({ user, token, loading, login, register, updateUser, logout }),
+    [user, token, loading, updateUser, logout]
+  );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
