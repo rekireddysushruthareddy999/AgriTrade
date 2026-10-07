@@ -20,14 +20,14 @@ const FEATURES = [
   },
   {
     icon: "⚡",
-    title: "Smart FEFO Allocation",
-    desc: "Perishable produce is prioritized by earliest expiry dates using Min-Heap allocation, driving agricultural spoilage toward zero.",
+    title: "Freshness-First Allocation",
+    desc: "Perishable produce is prioritized by harvest freshness and earliest expiry dates, minimizing storage losses for farmers and buyers.",
     badge: "Zero Waste",
   },
   {
     icon: "🚚",
     title: "Optimized Mandi Logistics",
-    desc: "Multi-stop delivery routes optimized over regional road graphs for lower transport costs and rapid delivery.",
+    desc: "Multi-stop delivery routes calculated across regional mandi hubs for lower transport freight costs and prompt market delivery.",
     badge: "Fast Transit",
   },
 ];

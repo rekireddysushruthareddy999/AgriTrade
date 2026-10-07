@@ -32,7 +32,7 @@ function PurchaseOrderDetail() {
         url: `/purchase-orders/${id}/${path}`,
       });
       if (path === "allocate") {
-        setSuccessMsg("Stock allocated via FEFO Min-Heap engine (soonest-to-expire lots prioritized)!");
+        setSuccessMsg("Warehouse produce allocated prioritizing earliest-expiring harvest lots!");
       } else if (path === "confirm-delivery") {
         setSuccessMsg("Order delivery confirmed and lots transitioned to delivered state!");
       } else {
@@ -123,8 +123,8 @@ function PurchaseOrderDetail() {
         <div className="card">
           <h2>Allocation & Actions</h2>
           <p className="muted" style={{ fontSize: 13 }}>
-            AgriTrade allocates warehouse inventory using the <strong>FEFO Min-Heap Engine</strong>,
-            automatically drawing soonest-to-expire lots first.
+            AgriTrade allocates warehouse inventory prioritizing harvest freshness (First-Expired-First-Out),
+            automatically drawing batches closest to expiry first to prevent produce spoilage.
           </p>
 
           <div className="button-stack" style={{ marginTop: 16 }}>
@@ -136,8 +136,8 @@ function PurchaseOrderDetail() {
                 onClick={() => action("allocate")}
                 style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
-                <span>⚡ Allocate Stock (FEFO Min-Heap)</span>
-                <span style={{ fontSize: 11, opacity: 0.85 }}>DSA 4.1</span>
+                <span>⚡ Allocate Warehouse Stock (Freshness-First)</span>
+                <span style={{ fontSize: 11, opacity: 0.85 }}>Freshness First</span>
               </button>
             )}
 
@@ -256,7 +256,7 @@ function PurchaseOrderDetail() {
                 borderRadius: 6,
               }}
             >
-              FEFO Min-Heap Dispatched
+              Fresh Produce Dispatched
             </span>
           </div>
 

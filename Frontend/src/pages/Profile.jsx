@@ -393,7 +393,7 @@ function Profile() {
             <div className="stat-card" style={{ background: "linear-gradient(135deg, #eff6ff, #ffffff)" }}>
               <span>Authorization Level</span>
               <strong style={{ fontSize: "1.4rem" }}>Level 2 Access</strong>
-              <small>Full DSA lifecycle control</small>
+              <small>Full supply chain lifecycle control</small>
             </div>
           </>
         )}
@@ -553,9 +553,9 @@ function Profile() {
             <p style={{ lineHeight: 1.7, color: "var(--muted)", margin: "8px 0 16px" }}>
               {profileData?.bio ||
                 (role === "farmer"
-                  ? "Cultivates and supplies high-grade agricultural produce lots to collection centers with verified transparent FEFO grading and Union-Find payout tracking."
+                  ? "Cultivates and supplies high-grade agricultural produce lots to collection centers with verified transparent quality grading and direct digital payout tracking."
                   : role === "buyer"
-                    ? "Wholesale produce buyer procuring fresh farm harvest with algorithmic route tracking and verified delivery fulfillment."
+                    ? "Wholesale produce buyer procuring fresh farm harvest with verified delivery fulfillment."
                     : "Verified AgriTrade platform operator managing agricultural logistics and grading.")}
             </p>
 

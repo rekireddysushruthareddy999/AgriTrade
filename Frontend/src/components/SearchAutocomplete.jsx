@@ -149,8 +149,8 @@ function SearchAutocomplete({
               justifyContent: "space-between",
             }}
           >
-            <span>Trie Search Suggestions</span>
-            <span style={{ color: "#1f7a45", fontSize: 10 }}>O(prefix length)</span>
+            <span>Market Directory Matches</span>
+            <span style={{ color: "#1f7a45", fontSize: 10 }}>Instant Results</span>
           </div>
 
           {suggestions.map((item, idx) => {

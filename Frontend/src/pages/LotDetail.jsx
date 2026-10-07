@@ -153,7 +153,7 @@ function LotDetail() {
       {/* Page Header */}
       <div className="page-header page-header-row">
         <div>
-          <span className="eyebrow">Lot Lifecycle Management · DSA 4.2 FSM Engine</span>
+          <span className="eyebrow">Produce Lifecycle Tracking · Harvest-to-Mandi Pipeline</span>
           <h1>{lot.groupId || `LOT-${String(lot._id).slice(-8).toUpperCase()}`}</h1>
           <p>
             {lot.produceCategoryId?.name || "Produce"} · Farmer:{" "}
@@ -197,7 +197,7 @@ function LotDetail() {
       {error && <div className="message error">{error}</div>}
       {successMsg && <div className="message success">{successMsg}</div>}
 
-      {/* 1. Visual Directed Graph FSM Stepper */}
+      {/* 1. Visual Lifecycle Pipeline Stepper */}
       <div className="card" style={{ marginBottom: 24, padding: 22 }}>
         <div
           style={{
@@ -211,10 +211,10 @@ function LotDetail() {
         >
           <div>
             <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: "var(--text)" }}>
-              🔄 Finite State Machine (Directed Graph) Pipeline
+              🔄 Harvest-to-Mandi Lifecycle Pipeline
             </h3>
             <p className="muted" style={{ margin: "4px 0 0", fontSize: 12 }}>
-              Every produce lot transitions through strict ordered states with $O(1)$ adjacency graph lookup.
+              Every harvest batch progresses through verified agricultural milestones from field intake to mandi delivery.
             </p>
           </div>
           <span
@@ -228,7 +228,7 @@ function LotDetail() {
               borderRadius: 8,
             }}
           >
-            DSA 4.2: O(1) Edge Validation
+            Verified Stage Progression
           </span>
         </div>
 
@@ -422,7 +422,7 @@ function LotDetail() {
           <div>
             <h2 style={{ margin: "0 0 6px" }}>⚡ Lifecycle Action Controls</h2>
             <p className="muted" style={{ margin: 0, fontSize: 13, lineHeight: 1.5 }}>
-              Permitted actions from current state (<strong>{lot.status}</strong>) validated by Directed Graph FSM:
+              Available next steps from current status (<strong>{lot.status}</strong>) in the supply chain:
             </p>
           </div>
 
@@ -534,7 +534,7 @@ function LotDetail() {
             </div>
           )}
 
-          {/* Buy Produce Callout (FEFO Min-Heap procurement) */}
+          {/* Buy Produce Callout */}
           {["stored", "accepted", "available"].includes(currentStatus) && Number(lot.quantity) > 0 && (
             <div
               style={{
@@ -550,11 +550,11 @@ function LotDetail() {
                   🛒 Commercial Procurement Ready
                 </span>
                 <span style={{ fontSize: 11, background: "#dcfce7", color: "#166534", padding: "2px 8px", borderRadius: 6, fontWeight: 700 }}>
-                  FEFO Min-Heap
+                  Freshness Guaranteed
                 </span>
               </div>
               <p style={{ margin: "0 0 12px", fontSize: 12, color: "#334155" }}>
-                Procure this produce lot directly. The system utilizes the <strong>FEFO Min-Heap</strong> algorithm to allocate stock prioritizing earliest expiry dates.
+                Procure this produce lot directly. Stock allocation prioritizes batches with earliest expiration dates to guarantee peak harvest freshness.
               </p>
               <button
                 type="button"

@@ -41,7 +41,7 @@ function ShipmentTracker() {
           <span className="eyebrow">Logistics & Fleet Operations</span>
           <h1>Shipment Tracker & Route Optimizer</h1>
           <p>
-            Monitor dispatched vehicles, transit legs, and compute Dijkstra-optimized multi-stop routes.
+            Monitor dispatched vehicles, transit legs, and compute optimized multi-stop mandi delivery routes.
           </p>
         </div>
 
@@ -61,14 +61,14 @@ function ShipmentTracker() {
             onClick={() => setActiveTab("optimizer")}
             style={{ fontSize: 13, padding: "8px 14px" }}
           >
-            🗺️ Dijkstra Route Planner
+            🗺️ Mandi Route Planner
           </button>
         </div>
       </div>
 
       {error && <div className="message error">{error}</div>}
 
-      {/* Dijkstra Route Planner tab */}
+      {/* Mandi Route Planner tab */}
       {activeTab === "optimizer" && (
         <div style={{ marginBottom: 24 }}>
           <RouteMapView />
@@ -119,7 +119,7 @@ function ShipmentTracker() {
                     </span>
                   </div>
 
-                  {/* Dijkstra Route details if attached */}
+                  {/* Route details if attached */}
                   {s.routeDetails?.totalDistanceKm > 0 && (
                     <div
                       style={{
@@ -134,7 +134,7 @@ function ShipmentTracker() {
                       }}
                     >
                       <span style={{ color: "#166534", fontWeight: 700 }}>
-                        ⚡ Dijkstra Shortest Path:
+                        ⚡ Optimized Transit Path:
                       </span>
                       <span style={{ color: "#166534", fontWeight: 800 }}>
                         {s.routeDetails.totalDistanceKm} km

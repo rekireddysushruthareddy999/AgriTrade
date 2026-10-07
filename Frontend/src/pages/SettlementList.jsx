@@ -106,7 +106,7 @@ function SettlementList() {
               onClick={handleBatchGenerate}
               style={{ display: "flex", alignItems: "center", gap: 6 }}
             >
-              <span>⚡ {batching ? "Clustering Lots…" : "Batch Settle (Union-Find)"}</span>
+              <span>⚡ {batching ? "Consolidating Harvest Lots…" : "Batch Payout Settlement"}</span>
               <span
                 style={{
                   fontSize: 10,
@@ -115,7 +115,7 @@ function SettlementList() {
                   borderRadius: 4,
                 }}
               >
-                DSA 4.5
+                Consolidated
               </span>
             </button>
           </div>
@@ -125,7 +125,7 @@ function SettlementList() {
       {error && <div className="message error">{error}</div>}
       {successMsg && <div className="message success">{successMsg}</div>}
 
-      {/* Union-Find Batching Info Banner */}
+      {/* Payout Batching Info Banner */}
       <div
         style={{
           background: "#f0fdf4",
@@ -142,10 +142,10 @@ function SettlementList() {
       >
         <div>
           <strong style={{ color: "#166534", fontSize: 13 }}>
-            🧩 Disjoint Set Union (Union-Find) Batch Engine:
+            💰 Consolidated Farmer Payout Engine:
           </strong>
           <span style={{ color: "#374151", fontSize: 13, marginLeft: 8 }}>
-            Groups all accepted lots for each farmer into unified settlement sets via union-by-rank and path compression, eliminating micro-payout overhead.
+            Aggregates all accepted harvest lots per farmer during the payment cycle into a single consolidated payout, eliminating micro-transaction fees and speeding up direct bank transfers.
           </span>
         </div>
         <span
@@ -158,7 +158,7 @@ function SettlementList() {
             borderRadius: 6,
           }}
         >
-          O(α(N)) Amortized
+          Direct Mandi Payout
         </span>
       </div>
 
@@ -264,7 +264,7 @@ function SettlementList() {
               ) : (
                 <tr>
                   <td colSpan="9" className="empty-cell">
-                    No settlement batches found. Click "Batch Settle (Union-Find)" to generate cycles.
+                    No settlement batches found. Click "Batch Payout Settlement" to generate cycles.
                   </td>
                 </tr>
               )}

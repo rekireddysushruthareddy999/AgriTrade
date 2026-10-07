@@ -24,7 +24,7 @@ function PurchaseOrderList() {
       .split("T")[0],
     deliveryAddress: "Central Mandi Distribution Terminal, Hub 1",
     autoAllocate: true,
-    notes: "Express fulfillment via FEFO Min-Heap",
+    notes: "Express harvest order fulfillment",
   });
 
   const load = () => {
@@ -110,7 +110,7 @@ function PurchaseOrderList() {
 
       setSuccessMsg(
         isAllocated
-          ? `✓ Purchase Order #${String(created._id).slice(-8).toUpperCase()} created & stock allocated instantly via DSA 4.1 FEFO Min-Heap!`
+          ? `✓ Purchase Order #${String(created._id).slice(-8).toUpperCase()} created & stock allocated instantly!`
           : `✓ Purchase Order #${String(created._id).slice(-8).toUpperCase()} created successfully!`
       );
 
@@ -146,10 +146,10 @@ function PurchaseOrderList() {
     <div>
       <div className="page-header page-header-row">
         <div>
-          <span className="eyebrow">Procurement & Demand · DSA 4.1 FEFO Heap</span>
+          <span className="eyebrow">Wholesale Procurement & Mandi Demand</span>
           <h1>Purchase Orders & Produce Procurement</h1>
           <p>
-            Procure harvested crops from farmers. Orders are automatically fulfilled using the First-Expired-First-Out Min-Heap algorithm.
+            Procure harvested crops directly from farmers. Orders automatically allocate warehouse batches prioritizing earliest expiry dates.
           </p>
         </div>
         <button
@@ -163,7 +163,7 @@ function PurchaseOrderList() {
         </button>
       </div>
 
-      {/* DSA 4.1 Architecture Card */}
+      {/* Freshness-First Allocation Card */}
       <div
         className="card"
         style={{
@@ -199,7 +199,7 @@ function PurchaseOrderList() {
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <strong style={{ fontSize: 15, color: "#065f46" }}>
-                DSA 4.1: Perishable Warehouse Allocation Engine (FEFO Min-Heap)
+                Freshness-First Warehouse Stock Allocation (FEFO)
               </strong>
               <span
                 style={{
@@ -211,11 +211,11 @@ function PurchaseOrderList() {
                   borderRadius: 6,
                 }}
               >
-                O(log N) Priority Queue
+                Zero Food Waste
               </span>
             </div>
             <p style={{ margin: "2px 0 0", fontSize: 13, color: "#047857" }}>
-              Every procurement order prioritizes soonest-to-expire lots first to minimize spoilage across agricultural storage hubs.
+              Every procurement order prioritizes batches closest to harvest expiry first to prevent spoilage across agricultural storage hubs.
             </p>
           </div>
         </div>
@@ -225,7 +225,7 @@ function PurchaseOrderList() {
           onClick={() => setShowCreateModal(true)}
           style={{ fontSize: 12, padding: "6px 14px", fontWeight: 700 }}
         >
-          ⚡ Place Order with FEFO Allocation
+          ⚡ Place Order with Stock Allocation
         </button>
       </div>
 
@@ -283,7 +283,7 @@ function PurchaseOrderList() {
                     color: "#059669",
                   }}
                 >
-                  Procurement Form · DSA 4.1 FEFO
+                  Wholesale Procurement Order
                 </span>
                 <h2 style={{ margin: "2px 0 0", fontSize: 20 }}>
                   🛒 Create Purchase Order
@@ -389,10 +389,10 @@ function PurchaseOrderList() {
                 />
                 <label htmlFor="autoAllocate" style={{ margin: 0, cursor: "pointer" }}>
                   <strong style={{ color: "#065f46", fontSize: 13, display: "block" }}>
-                    ⚡ Instant Auto-Allocate via FEFO Min-Heap (DSA 4.1)
+                    ⚡ Automatic Freshness Allocation (FEFO)
                   </strong>
                   <span style={{ fontSize: 12, color: "#047857" }}>
-                    Immediately draws available warehouse produce lots prioritized by earliest expiry dates to minimize perishability losses.
+                    Automatically allocates available warehouse batches prioritized by earliest harvest expiry to guarantee peak crop freshness.
                   </span>
                 </label>
               </div>
@@ -446,7 +446,7 @@ function PurchaseOrderList() {
                 <th>Buyer</th>
                 <th>Produce Commodity</th>
                 <th>Requested Qty</th>
-                <th>Fulfilled (FEFO)</th>
+                <th>Fulfilled Qty</th>
                 <th>Deadline</th>
                 <th>Status</th>
                 <th>Action</th>
@@ -548,7 +548,7 @@ function PurchaseOrderList() {
                     <div style={{ fontSize: 24, marginBottom: 6 }}>🛒</div>
                     <strong>No purchase orders found.</strong>
                     <p style={{ margin: "4px 0 12px", color: "#64748b" }}>
-                      Place your first produce procurement order with instant FEFO Min-Heap allocation.
+                      Place your first produce procurement order with automatic warehouse inventory allocation.
                     </p>
                     <button
                       type="button"

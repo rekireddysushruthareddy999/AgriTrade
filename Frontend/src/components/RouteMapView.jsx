@@ -76,10 +76,10 @@ function RouteMapView({ stops = [], initialStart = null, onRouteOptimized = null
       >
         <div>
           <h3 style={{ margin: 0, color: "#14532d", display: "flex", alignItems: "center", gap: 8 }}>
-            <span>🗺️</span> Dijkstra Logistics Route Optimization
+            <span>🗺️</span> Regional Mandi Logistics Route Optimization
           </h3>
           <p style={{ margin: "4px 0 0", fontSize: 13, color: "#6b7280" }}>
-            Weighted Graph shortest-path calculation across regional hubs and collection centers.
+            Shortest-distance delivery calculation across regional agricultural hubs and collection centers.
           </p>
         </div>
 
@@ -95,7 +95,7 @@ function RouteMapView({ stops = [], initialStart = null, onRouteOptimized = null
             letterSpacing: 0.5,
           }}
         >
-          DSA 4.3: Dijkstra O((V+E) log V)
+          Shortest Transit Path Optimizer
         </span>
       </div>
 
