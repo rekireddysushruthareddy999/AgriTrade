@@ -100,11 +100,11 @@ function drawLane(ctx, lane) {
     const radius = 14;
 
     ctx.save();
-    // High clarity & vibrancy so images are clearly visible scrolling in background
-    ctx.globalAlpha = 0.94 + lane.depth * 0.06;
-    ctx.shadowColor = "rgba(0, 20, 10, 0.45)";
-    ctx.shadowBlur = 18;
-    ctx.shadowOffsetY = 7;
+    // Soft, pleasant background visibility
+    ctx.globalAlpha = 0.72 + lane.depth * 0.22;
+    ctx.shadowColor = "rgba(0, 0, 0, 0.22)";
+    ctx.shadowBlur = 12;
+    ctx.shadowOffsetY = 4;
 
     ctx.beginPath();
     ctx.moveTo(x + radius, y);
