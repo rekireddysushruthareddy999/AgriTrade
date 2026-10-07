@@ -32,6 +32,8 @@ router.patch(
   "/:id/status",
   requireRole(
     "admin",
+    "farmer",
+    "buyer",
     "inspector",
     "quality_inspector",
     "warehouse_manager",
@@ -45,7 +47,14 @@ router.patch(
 
 router.post(
   "/:id/inspections",
-  requireRole("admin", "inspector", "quality_inspector"),
+  requireRole(
+    "admin",
+    "inspector",
+    "quality_inspector",
+    "collection_center",
+    "collection_center_staff",
+    "warehouse_manager"
+  ),
   addInspectionToLot
 );
 

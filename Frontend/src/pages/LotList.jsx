@@ -55,11 +55,18 @@ function LotList() {
         <select value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="">All statuses</option>
           {[
+            "created",
+            "received",
+            "inspected",
+            "accepted",
+            "stored",
+            "allocated",
+            "dispatched",
+            "delivered",
+            "settled",
             "available",
             "reserved",
-            "inspected",
-            "shipped",
-            "settled",
+            "rejected",
             "expired",
           ].map((s) => (
             <option key={s} value={s}>

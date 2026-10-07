@@ -12,13 +12,22 @@ function InspectionQueue() {
   const load = () => {
     setLoading(true);
     Promise.all([
+      axiosInstance.get("/lots", { params: { status: "received" } }),
+      axiosInstance.get("/lots", { params: { status: "created" } }),
       axiosInstance.get("/lots", { params: { status: "available" } }),
       axiosInstance.get("/lots", { params: { status: "reserved" } }),
       axiosInstance.get("/inspections"),
     ])
-      .then(([a, b, c]) => {
-        setLots([...(a.data.data || []), ...(b.data.data || [])]);
-        setCompleted(c.data.data || []);
+      .then(([a, b, c, d, e]) => {
+        const map = new Map();
+        [
+          ...(a.data.data || []),
+          ...(b.data.data || []),
+          ...(c.data.data || []),
+          ...(d.data.data || []),
+        ].forEach((l) => map.set(l._id, l));
+        setLots(Array.from(map.values()));
+        setCompleted(e.data.data || []);
       })
       .catch((e) =>
         setError(

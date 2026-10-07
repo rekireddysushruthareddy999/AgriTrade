@@ -35,10 +35,10 @@ const STANDARD_LOT_TRANSITIONS = Object.freeze({
   stored: ["allocated", "expired"],
   allocated: ["dispatched", "stored"], // "stored" if de-allocated or order cancelled
   dispatched: ["delivered"],
-  delivered: [], // Terminal state
+  delivered: ["settled"],
 
   // Compatibility with legacy status values
-  available: ["allocated", "reserved", "expired"],
+  available: ["allocated", "reserved", "inspected", "stored", "expired"],
   reserved: ["dispatched", "available", "stored"],
   shipped: ["delivered", "settled"],
   settled: [],
@@ -53,8 +53,9 @@ const STATE_ACTION_LABELS = Object.freeze({
   rejected: "Reject Lot Quality",
   stored: "Move to Warehouse Storage",
   allocated: "Allocate to Purchase Order",
-  dispatched: "Dispatch Shipment",
+  dispatched: "Dispatch Carrier Shipment",
   delivered: "Confirm Buyer Delivery",
+  settled: "Finalize Farmer Batch Settlement",
 });
 
 class LotStateGraph {

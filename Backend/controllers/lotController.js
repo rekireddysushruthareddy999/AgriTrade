@@ -203,7 +203,7 @@ const getLotById = async (req, res) => {
  * Validates transition against the Directed Graph FSM before saving.
  */
 const updateLotStatus = async (req, res) => {
-  const { status, warehouseId, notes } = req.body;
+  const { status, warehouseId, notes, adminOverride } = req.body;
   if (!status) {
     return res
       .status(400)
@@ -217,9 +217,10 @@ const updateLotStatus = async (req, res) => {
 
   const currentStatus = lot.status;
   const targetStatus = String(status).toLowerCase().trim();
+  const isAdmin = req.user?.role === "admin";
 
-  // O(1) Directed Graph Edge Lookup
-  if (!graph.canTransition(currentStatus, targetStatus)) {
+  // O(1) Directed Graph Edge Lookup (allows admin override for testing/simulation)
+  if (!graph.canTransition(currentStatus, targetStatus) && !(isAdmin && adminOverride)) {
     return res.status(409).json({
       success: false,
       message: `Invalid lot status transition from "${currentStatus}" to "${targetStatus}". Permitted next states: [${graph.getNextStates(currentStatus).join(", ")}].`,
@@ -230,11 +231,16 @@ const updateLotStatus = async (req, res) => {
   lot.status = targetStatus;
   if (warehouseId) lot.warehouseId = warehouseId;
   if (notes) lot.notes = notes;
+  if (targetStatus === "settled" && !lot.groupId) {
+    lot.groupId = `SETTLED-${String(lot._id).slice(-6).toUpperCase()}`;
+  }
 
   await lot.save();
 
+  const populated = await populateLot(Lot.findById(lot._id)).lean();
+
   return successResponse(res, 200, `Lot status transitioned to "${targetStatus}".`, {
-    ...lot.toObject(),
+    ...populated,
     allowedTransitions: graph.getNextStates(lot.status),
     availableActions: graph.getAvailableActions(lot.status),
   });
