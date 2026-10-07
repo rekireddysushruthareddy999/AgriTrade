@@ -69,21 +69,21 @@ const DEFAULT_AVATARS_BY_ROLE = {
 
 function Profile() {
   const { user, updateUser } = useAuth();
-  const [profileData, setProfileData] = useState(null);
+  const [profileData, setProfileData] = useState(() => user || null);
   const [stats, setStats] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !user);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
-  const [editForm, setEditForm] = useState({
-    name: "",
-    phone: "",
-    avatarUrl: "",
-    address: "",
-    bio: "",
-  });
+  const [editForm, setEditForm] = useState(() => ({
+    name: user?.name || "",
+    phone: user?.phone || "",
+    avatarUrl: user?.avatarUrl || DEFAULT_AVATARS_BY_ROLE[user?.role] || "",
+    address: user?.address || "",
+    bio: user?.bio || "",
+  }));
 
   const loadProfile = () => {
     setLoading(true);
@@ -111,6 +111,20 @@ function Profile() {
   useEffect(() => {
     loadProfile();
   }, []);
+
+  useEffect(() => {
+    if (user && !profileData) {
+      setProfileData(user);
+      setEditForm((prev) => ({
+        ...prev,
+        name: user.name || prev.name,
+        phone: user.phone || prev.phone,
+        avatarUrl: user.avatarUrl || prev.avatarUrl || DEFAULT_AVATARS_BY_ROLE[user.role] || "",
+        address: user.address || prev.address,
+        bio: user.bio || prev.bio,
+      }));
+    }
+  }, [user, profileData]);
 
   const handleFileUpload = (e) => {
     const file = e.target.files?.[0];
