@@ -53,6 +53,11 @@ const lotSchema = new Schema(
       default: 0,
       min: 0,
     },
+    imageUrl: {
+      type: String,
+      required: [true, "Product image is mandatory while uploading a lot."],
+      trim: true,
+    },
     harvestDate: {
       type: Date,
       required: true,

@@ -235,6 +235,15 @@ function LotDetail() {
       <div className="detail-grid">
         <div className="card">
           <h2>Batch Information</h2>
+          {lot.imageUrl && (
+            <div style={{ margin: "10px 0 16px", borderRadius: 12, overflow: "hidden", maxHeight: 220, border: "1px solid #e2e8f0" }}>
+              <img
+                src={lot.imageUrl}
+                alt={lot.produceCategoryId?.name || "Produce lot"}
+                style={{ width: "100%", height: 200, objectFit: "cover", display: "block" }}
+              />
+            </div>
+          )}
           <dl className="detail-list">
             <div>
               <dt>Quantity Available</dt>

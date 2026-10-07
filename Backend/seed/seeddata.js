@@ -265,6 +265,7 @@ async function seedData() {
       farmerId: farmers[0]._id,
       produceCategoryId: categories[0]._id, // Tomato
       quantity: 500,
+      imageUrl: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&auto=format&fit=crop&q=80",
       status: "stored", // Ready for FEFO allocation
       grade: "A",
       pricePerUnit: 30,
@@ -277,6 +278,7 @@ async function seedData() {
       farmerId: farmers[0]._id,
       produceCategoryId: categories[0]._id, // Tomato
       quantity: 800,
+      imageUrl: "https://images.unsplash.com/photo-1546470427-227c7369a47d?w=600&auto=format&fit=crop&q=80",
       status: "stored",
       grade: "B",
       pricePerUnit: 26,
@@ -289,6 +291,7 @@ async function seedData() {
       farmerId: farmers[1]._id,
       produceCategoryId: categories[1]._id, // Chilli
       quantity: 400,
+      imageUrl: "https://images.unsplash.com/photo-1588252303782-cb80119abd6d?w=600&auto=format&fit=crop&q=80",
       status: "accepted",
       grade: "A",
       pricePerUnit: 175,
@@ -301,6 +304,7 @@ async function seedData() {
       farmerId: farmers[1]._id,
       produceCategoryId: categories[2]._id, // Onion
       quantity: 1200,
+      imageUrl: "https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=600&auto=format&fit=crop&q=80",
       status: "created",
       harvestDate: new Date(now.getTime()),
       expiryEstimate: new Date(now.getTime() + 30 * dayMs),
@@ -311,6 +315,7 @@ async function seedData() {
       farmerId: farmers[0]._id,
       produceCategoryId: categories[0]._id,
       quantity: 350,
+      imageUrl: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&auto=format&fit=crop&q=80",
       status: "received",
       harvestDate: new Date(now.getTime() - 1 * dayMs),
       expiryEstimate: new Date(now.getTime() + 6 * dayMs),

@@ -26,6 +26,7 @@ const createLot = async (req, res) => {
     groupId,
     pricePerUnit,
     notes,
+    imageUrl,
   } = req.body;
 
   if (
@@ -39,6 +40,13 @@ const createLot = async (req, res) => {
       success: false,
       message:
         "farmerId, produceCategoryId, quantity, harvestDate and expiryEstimate are required.",
+    });
+  }
+
+  if (!imageUrl || typeof imageUrl !== "string" || !imageUrl.trim()) {
+    return res.status(400).json({
+      success: false,
+      message: "Product image is mandatory while uploading a lot.",
     });
   }
 
@@ -94,6 +102,7 @@ const createLot = async (req, res) => {
     farmerId,
     produceCategoryId,
     quantity: Number(quantity),
+    imageUrl: imageUrl.trim(),
     status: "created",
     pricePerUnit: Number(pricePerUnit || category.basePrice || 0),
     harvestDate: new Date(harvestDate),
