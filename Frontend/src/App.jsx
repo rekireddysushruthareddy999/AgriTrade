@@ -68,7 +68,7 @@ function App() {
               <Route
                 element={
                   <ProtectedRoute
-                    roles={["admin", "buyer", "warehouse_manager"]}
+                    roles={["admin", "buyer", "farmer", "warehouse_manager"]}
                   />
                 }
               >

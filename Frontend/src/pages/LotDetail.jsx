@@ -389,6 +389,18 @@ function LotDetail() {
               </dd>
             </div>
             <div>
+              <dt>Origin / Farm Gate (From)</dt>
+              <dd>
+                📍 <strong>{lot.originLocation || lot.farmId?.location || "Farm Gate (Producer Origin)"}</strong>
+              </dd>
+            </div>
+            <div>
+              <dt>Destination / Storage Hub (To)</dt>
+              <dd>
+                🏬 <strong>{lot.destinationLocation || (lot.warehouseId?.name ? `${lot.warehouseId.name} · ${lot.warehouseId.location || "Hub"}` : "Central Storage Mandi")}</strong>
+              </dd>
+            </div>
+            <div>
               <dt>Farmer Owner</dt>
               <dd>{lot.farmerId?.name || "—"}</dd>
             </div>
@@ -519,6 +531,43 @@ function LotDetail() {
                   </p>
                 </>
               )}
+            </div>
+          )}
+
+          {/* Buy Produce Callout (FEFO Min-Heap procurement) */}
+          {["stored", "accepted", "available"].includes(currentStatus) && Number(lot.quantity) > 0 && (
+            <div
+              style={{
+                background: "linear-gradient(135deg, #ecfdf5, #f0fdf4)",
+                border: "1.5px solid #10b981",
+                borderRadius: 14,
+                padding: 16,
+                marginTop: 6,
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                <span style={{ fontSize: 13, fontWeight: 750, color: "#065f46" }}>
+                  🛒 Commercial Procurement Ready
+                </span>
+                <span style={{ fontSize: 11, background: "#dcfce7", color: "#166534", padding: "2px 8px", borderRadius: 6, fontWeight: 700 }}>
+                  FEFO Min-Heap
+                </span>
+              </div>
+              <p style={{ margin: "0 0 12px", fontSize: 12, color: "#334155" }}>
+                Procure this produce lot directly. The system utilizes the <strong>FEFO Min-Heap</strong> algorithm to allocate stock prioritizing earliest expiry dates.
+              </p>
+              <button
+                type="button"
+                className="primary-btn btn-animated"
+                style={{ width: "100%", padding: "11px", fontSize: 13, fontWeight: 750 }}
+                onClick={() =>
+                  navigate(
+                    `/purchase-orders?buyLot=${lot._id}&category=${lot.produceCategoryId?._id}&qty=${lot.quantity}`
+                  )
+                }
+              >
+                🛒 Buy Produce / Create Purchase Order →
+              </button>
             </div>
           )}
 

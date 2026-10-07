@@ -27,7 +27,7 @@ function Navbar() {
     links.push(["/inspections", "Inspections"]);
   }
 
-  if (["admin", "buyer", "warehouse_manager"].includes(role)) {
+  if (["admin", "buyer", "farmer", "warehouse_manager"].includes(role)) {
     links.push(["/purchase-orders", "Purchases"]);
   }
 

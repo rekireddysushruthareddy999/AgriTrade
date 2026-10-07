@@ -49,7 +49,6 @@ const PRODUCE_IMAGE_PRESETS = [
 function CreateLot() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const canAssignWarehouse = user?.role === "admin";
   const [farmers, setFarmers] = useState([]);
   const [categories, setCategories] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
@@ -67,6 +66,8 @@ function CreateLot() {
     harvestDate: "",
     expiryEstimate: "",
     warehouseId: "",
+    originLocation: "",
+    destinationLocation: "",
     groupId: "",
     imageUrl: PRODUCE_IMAGE_PRESETS[0].url, // default preset
   });
@@ -75,14 +76,33 @@ function CreateLot() {
     const requests = [
       axiosInstance.get("/farmers"),
       axiosInstance.get("/produce-categories"),
+      axiosInstance.get("/warehouses"),
     ];
-    if (canAssignWarehouse) requests.push(axiosInstance.get("/warehouses"));
 
     Promise.all(requests)
       .then(([farmersRes, categoriesRes, warehousesRes]) => {
-        setFarmers(farmersRes.data.data || []);
+        const farmerList = farmersRes.data.data || [];
+        setFarmers(farmerList);
         setCategories(categoriesRes.data.data || []);
         setWarehouses(warehousesRes?.data?.data || []);
+
+        if (user?.role === "farmer" && farmerList.length > 0) {
+          const matching = farmerList.find(
+            (f) =>
+              f.userId === user.id ||
+              f.phone === user.phone ||
+              f.name.toLowerCase() === user.name.toLowerCase()
+          );
+          if (matching) {
+            setForm((prev) => ({
+              ...prev,
+              farmerId: matching._id,
+              originLocation:
+                prev.originLocation ||
+                `${matching.name} Farm (${matching.regionId?.name || "Field Gate"})`,
+            }));
+          }
+        }
       })
       .catch((err) => {
         const message =
@@ -92,7 +112,18 @@ function CreateLot() {
         setError(message);
       })
       .finally(() => setOptionsLoading(false));
-  }, [canAssignWarehouse]);
+  }, [user]);
+
+  const handleWarehouseChange = (whId) => {
+    const selectedWh = warehouses.find((w) => w._id === whId);
+    setForm((prev) => ({
+      ...prev,
+      warehouseId: whId,
+      destinationLocation: selectedWh
+        ? `${selectedWh.name} · ${selectedWh.location}`
+        : prev.destinationLocation,
+    }));
+  };
 
   const handleFileUpload = (e) => {
     const file = e.target.files?.[0];
@@ -165,6 +196,8 @@ function CreateLot() {
         produceCategoryId,
         quantity: Number(form.quantity),
         warehouseId: form.warehouseId || undefined,
+        originLocation: form.originLocation ? form.originLocation.trim() : undefined,
+        destinationLocation: form.destinationLocation ? form.destinationLocation.trim() : undefined,
         groupId: form.groupId || undefined,
       });
 
@@ -479,24 +512,40 @@ function CreateLot() {
           />
         </label>
 
-        {canAssignWarehouse && (
-          <label>
-            Assign Warehouse Storage
-            <select
-              value={form.warehouseId}
-              onChange={(e) =>
-                setForm({ ...form, warehouseId: e.target.value })
-              }
-            >
-              <option value="">Not assigned yet (pending intake)</option>
-              {warehouses.map((warehouse) => (
-                <option key={warehouse._id} value={warehouse._id}>
-                  {warehouse.name} · {warehouse.location}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
+        <label>
+          Destination Warehouse / Cold Storage
+          <select
+            value={form.warehouseId}
+            onChange={(e) => handleWarehouseChange(e.target.value)}
+          >
+            <option value="">Select target warehouse facility (or enter manual destination below)</option>
+            {warehouses.map((warehouse) => (
+              <option key={warehouse._id} value={warehouse._id}>
+                {warehouse.name} · {warehouse.location} ({warehouse.type || "Dry/Cold"})
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label>
+          Origin Location / Farm Gate (From)
+          <input
+            value={form.originLocation}
+            onChange={(e) => setForm({ ...form, originLocation: e.target.value })}
+            placeholder="e.g. Green Valley Farm Gate, Plot #4, Guntur"
+            required
+          />
+        </label>
+
+        <label>
+          Destination Location / Storage Hub (To)
+          <input
+            value={form.destinationLocation}
+            onChange={(e) => setForm({ ...form, destinationLocation: e.target.value })}
+            placeholder="e.g. Central Mandi Warehouse 1, Guntur Hub"
+            required
+          />
+        </label>
 
         <label>
           Batch Group ID <span className="muted">(optional)</span>

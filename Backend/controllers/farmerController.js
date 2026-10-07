@@ -4,7 +4,7 @@ const { findFarmerProfile } = require("../utils/farmerAccess");
 
 const getFarmers = async (req, res) => {
   const filter = {};
-  if (req.user?.role === "farmer") {
+  if (req.query.myProfileOnly === "true" && req.user?.role === "farmer") {
     const profile = await findFarmerProfile(req.user);
     if (!profile) {
       return successResponse(res, 200, "Farmers retrieved successfully.", [], {
@@ -15,11 +15,13 @@ const getFarmers = async (req, res) => {
   } else if (req.query.regionId) {
     filter.regionId = req.query.regionId;
   }
+
   const farmers = await Farmer.find(filter)
     .populate("regionId", "name code")
     .populate("farmIds", "location sizeAcres produceGrown")
     .sort({ createdAt: -1 })
     .lean();
+
   return successResponse(res, 200, "Farmers retrieved successfully.", farmers, {
     count: farmers.length,
   });
@@ -47,22 +49,17 @@ const createFarmer = async (req, res) => {
 };
 
 const getFarmerById = async (req, res) => {
-  if (req.user?.role === "farmer") {
-    const profile = await findFarmerProfile(req.user);
-    if (!profile || String(profile._id) !== req.params.id) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Farmer not found." });
-    }
-  }
   const farmer = await Farmer.findById(req.params.id)
     .populate("regionId", "name code")
     .populate("farmIds")
     .lean();
-  if (!farmer)
+
+  if (!farmer) {
     return res
       .status(404)
       .json({ success: false, message: "Farmer not found." });
+  }
+
   return successResponse(res, 200, "Farmer retrieved successfully.", farmer);
 };
 

@@ -27,6 +27,8 @@ const createLot = async (req, res) => {
     pricePerUnit,
     notes,
     imageUrl,
+    originLocation,
+    destinationLocation,
   } = req.body;
 
   if (
@@ -98,6 +100,13 @@ const createLot = async (req, res) => {
     });
   }
 
+  // Resolve destination warehouse name if provided
+  let destLoc = destinationLocation ? String(destinationLocation).trim() : "";
+  if (warehouseId && !destLoc && isValidObjectId(warehouseId)) {
+    const wh = await Warehouse.findById(warehouseId).lean();
+    if (wh) destLoc = `${wh.name} (${wh.location || "Storage"})`;
+  }
+
   const lot = await Lot.create({
     farmerId,
     produceCategoryId,
@@ -108,6 +117,8 @@ const createLot = async (req, res) => {
     harvestDate: new Date(harvestDate),
     expiryEstimate: new Date(expiryEstimate),
     warehouseId: warehouseId || null,
+    originLocation: originLocation ? String(originLocation).trim() : "",
+    destinationLocation: destLoc,
     groupId: groupId || null,
     notes: notes || "",
   });
@@ -119,7 +130,7 @@ const createLot = async (req, res) => {
 const getLots = async (req, res) => {
   const filter = {};
 
-  if (req.user?.role === "farmer") {
+  if (req.user?.role === "farmer" && req.query.myLotsOnly === "true") {
     const profile = await findFarmerProfile(req.user);
     if (!profile) {
       return successResponse(res, 200, "Lots retrieved successfully.", [], {
@@ -138,8 +149,11 @@ const getLots = async (req, res) => {
 
   if (req.query.status) {
     filter.status = req.query.status;
+  } else if (req.query.includeSettled !== "true") {
+    // Automatically remove settled products from active lots list
+    filter.status = { $ne: "settled" };
   }
-  if (req.query.farmerId && req.user?.role !== "farmer") {
+  if (req.query.farmerId) {
     filter.farmerId = req.query.farmerId;
   }
   if (req.query.produceCategoryId) {
@@ -169,15 +183,6 @@ const getLotById = async (req, res) => {
   const lot = await populateLot(Lot.findById(req.params.id)).lean();
   if (!lot) {
     return res.status(404).json({ success: false, message: "Lot not found." });
-  }
-
-  if (req.user?.role === "farmer") {
-    const profile = await findFarmerProfile(req.user);
-    if (!profile || String(profile._id) !== String(lot.farmerId?._id)) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Lot not found." });
-    }
   }
 
   // Get inspections for this lot

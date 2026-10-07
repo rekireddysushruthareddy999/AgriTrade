@@ -11,9 +11,7 @@ const populateOrder = (query) =>
     .populate("regionId", "name code");
 
 const findOrderForUser = (req, id) => {
-  const filter = { _id: id };
-  if (req.user?.role === "buyer") filter.buyerId = req.user.id;
-  return PurchaseOrder.findOne(filter);
+  return PurchaseOrder.findById(id);
 };
 
 const createPurchaseOrder = async (req, res) => {
@@ -45,7 +43,7 @@ const createPurchaseOrder = async (req, res) => {
     status: "pending",
   });
 
-  await PurchaseOrderItem.insertMany(
+  const createdItems = await PurchaseOrderItem.insertMany(
     items.map((i) => ({
       purchaseOrderId: order._id,
       produceCategoryId: i.produceCategoryId,
@@ -54,6 +52,51 @@ const createPurchaseOrder = async (req, res) => {
       allocatedLots: [],
     }))
   );
+
+  // Auto-allocate via FEFO Min-Heap if requested (1-click purchase)
+  if (req.body.autoAllocate) {
+    for (const item of createdItems) {
+      const availableLots = await Lot.find({
+        produceCategoryId: item.produceCategoryId,
+        status: { $in: ["stored", "accepted", "available"] },
+        quantity: { $gt: 0 },
+      }).lean();
+
+      if (availableLots.length > 0) {
+        const fefoResult = allocateLotsFEFO(availableLots, item.quantityRequested);
+        for (const alloc of fefoResult.allocations) {
+          const lot = await Lot.findById(alloc.lotId);
+          if (!lot) continue;
+          lot.quantity = alloc.remainingLotQuantity;
+          if (lot.quantity === 0) lot.status = "allocated";
+          await lot.save();
+
+          if (lot.warehouseId) {
+            await InventoryMovement.create({
+              lotId: lot._id,
+              warehouseId: lot.warehouseId,
+              type: "out",
+              quantity: alloc.allocatedQuantity,
+              timestamp: new Date(),
+            });
+          }
+
+          item.quantityFulfilled += alloc.allocatedQuantity;
+          if (!item.allocatedLots.some((id) => String(id) === String(lot._id))) {
+            item.allocatedLots.push(lot._id);
+          }
+        }
+        await item.save();
+      }
+    }
+    const refreshed = await PurchaseOrderItem.find({ purchaseOrderId: order._id });
+    if (refreshed.every((i) => i.quantityFulfilled >= i.quantityRequested)) {
+      order.status = "allocated";
+    } else if (refreshed.some((i) => i.quantityFulfilled > 0)) {
+      order.status = "partially_fulfilled";
+    }
+    await order.save();
+  }
 
   return successResponse(
     res,
@@ -268,6 +311,12 @@ const cancelPurchaseOrder = async (req, res) => {
     return res
       .status(404)
       .json({ success: false, message: "Purchase order not found." });
+  }
+
+  if (req.user?.role !== "admin" && String(order.buyerId) !== String(req.user.id)) {
+    return res
+      .status(403)
+      .json({ success: false, message: "Unauthorized to cancel this order." });
   }
 
   if (["fulfilled", "delivered"].includes(order.status)) {

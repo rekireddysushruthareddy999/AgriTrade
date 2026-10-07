@@ -73,6 +73,18 @@ const lotSchema = new Schema(
       default: null,
       index: true,
     },
+    // From: Farm gate or collection center origin location
+    originLocation: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    // To: Target warehouse or storage facility destination location
+    destinationLocation: {
+      type: String,
+      default: "",
+      trim: true,
+    },
     // Union-Find settlement batch group identifier
     groupId: {
       type: String,

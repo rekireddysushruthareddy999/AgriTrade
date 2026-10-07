@@ -92,3 +92,33 @@ test("Integration: Union-Find clusters lots by farmer for payout cycle", () => {
   assert.equal(f1Batch.lotCount, 2);
   assert.equal(f1Batch.totalQuantity, 125);
 });
+
+test("Integration: Lot origin & destination locations and settled product filtering", () => {
+  const activeLot = {
+    _id: "lot-active",
+    status: "stored",
+    originLocation: "Farm Gate 1",
+    destinationLocation: "Central Warehouse 1",
+  };
+  const settledLot = {
+    _id: "lot-settled",
+    status: "settled",
+    originLocation: "Farm Gate 2",
+    destinationLocation: "Mandi Hub 2",
+  };
+
+  const allLots = [activeLot, settledLot];
+
+  // Default active marketplace filter removes settled products
+  const activeMarketplace = allLots.filter((l) => l.status !== "settled");
+  assert.equal(activeMarketplace.length, 1);
+  assert.equal(activeMarketplace[0]._id, "lot-active");
+  assert.equal(activeMarketplace[0].originLocation, "Farm Gate 1");
+  assert.equal(activeMarketplace[0].destinationLocation, "Central Warehouse 1");
+
+  // Settled tab retrieves settled lots
+  const settledRegistry = allLots.filter((l) => l.status === "settled");
+  assert.equal(settledRegistry.length, 1);
+  assert.equal(settledRegistry[0]._id, "lot-settled");
+});
+

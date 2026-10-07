@@ -78,6 +78,18 @@ function LotCard({ lot }) {
             <span style={{ fontSize: 11, color: "var(--muted)" }}>Farmer</span>
             <strong style={{ fontSize: 14 }}>{lot.farmerId?.name || "—"}</strong>
           </div>
+
+          <div style={{ gridColumn: "1/-1", display: "flex", flexDirection: "column", gap: 4, background: "#f8fafc", padding: "8px 10px", borderRadius: 8, fontSize: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ color: "#059669", fontWeight: 700 }}>From:</span>
+              <span style={{ color: "#334155" }}>{lot.originLocation || lot.farmId?.location || "Farm Gate"}</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ color: "#2563eb", fontWeight: 700 }}>To:</span>
+              <span style={{ color: "#334155" }}>{lot.destinationLocation || (lot.warehouseId?.name ? `${lot.warehouseId.name} · ${lot.warehouseId.location || "Hub"}` : "Central Storage")}</span>
+            </div>
+          </div>
+
           {lot.expiryEstimate && (
             <div style={{ gridColumn: "1/-1" }}>
               <span style={{ fontSize: 11, color: "var(--muted)" }}>FEFO Expiry Estimate</span>
@@ -88,13 +100,24 @@ function LotCard({ lot }) {
           )}
         </div>
 
-        <Link
-          to={`/lots/${lot._id}`}
-          className="secondary-btn"
-          style={{ width: "100%", textAlign: "center", marginTop: 4 }}
-        >
-          View Full Lifecycle Details →
-        </Link>
+        <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+          {["stored", "accepted", "available"].includes(lot.status) && Number(lot.quantity) > 0 ? (
+            <Link
+              to={`/purchase-orders?buyLot=${lot._id}&category=${lot.produceCategoryId?._id}&qty=${lot.quantity}`}
+              className="primary-btn btn-animated"
+              style={{ flex: 1, textAlign: "center", fontSize: 13, padding: "8px 10px" }}
+            >
+              🛒 Buy Produce
+            </Link>
+          ) : null}
+          <Link
+            to={`/lots/${lot._id}`}
+            className="secondary-btn"
+            style={{ flex: 1, textAlign: "center", fontSize: 13, padding: "8px 10px" }}
+          >
+            Lifecycle Details →
+          </Link>
+        </div>
       </div>
     </article>
   );
