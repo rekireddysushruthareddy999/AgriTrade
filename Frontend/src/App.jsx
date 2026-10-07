@@ -2,10 +2,12 @@ import { Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Navbar from "./components/Navbar";
+import PaperBackground from "./components/PaperBackground";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import HomePage from "./pages/HomePage";
 import Dashboard from "./pages/Dashboard";
 import FarmerList from "./pages/FarmerList";
 import LotList from "./pages/LotList";
@@ -35,15 +37,17 @@ function App() {
   return (
     <AuthProvider>
       <div className="app-shell">
+        <PaperBackground />
         <Navbar />
         <main className="page-shell">
           <Routes>
+            <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route element={<ProtectedRoute />}>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/farmers" element={<FarmerList />} />
               <Route path="/lots" element={<LotList />} />
               <Route path="/lots/:id" element={<LotDetail />} />

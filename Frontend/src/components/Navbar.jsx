@@ -8,7 +8,7 @@ function Navbar() {
 
   const role = user?.role;
   const links = [
-    ["/", "Dashboard"],
+    ["/dashboard", "Dashboard"],
     ["/farmers", "Farmers"],
     ["/lots", "Lots"],
   ];
@@ -37,7 +37,7 @@ function Navbar() {
       </div>
       <div className="nav-links">
         {links.map(([to, label]) => (
-          <NavLink key={to} to={to} end={to === "/"}>
+          <NavLink key={to} to={to} end={to === "/dashboard"}>
             {label}
           </NavLink>
         ))}
